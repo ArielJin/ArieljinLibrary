@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:background="@drawable/round_black_transparent"
+              android:gravity="center"
+              android:minHeight="120dp"
+              android:minWidth="180dp"
+              android:orientation="horizontal"
+              android:padding="20dp">
+
+    <ImageView
+            android:id="@+id/toast_image"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@mipmap/icon_message"/>
+
+    <TextView
+            android:id="@+id/toast_text"
+            android:layout_width="160dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textColor="@android:color/white"
+            android:layout_marginLeft="5dp"
+            android:textSize="12sp"
+            android:text="语音验证码已发送啦！\n请注意接听来电电话：\n400-610-1019"/>
+
+</LinearLayout>
