@@ -194,7 +194,7 @@ public class LoadMoreRecyclerView extends AdRecyclerView {
 
             DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
 
-            int minHeight = (int) (displayMetrics.density * 60 + 0.5);
+            int minHeight = (int) (displayMetrics.density * 30 + 0.5);
             setMinimumHeight(minHeight);
 
 
@@ -446,7 +446,7 @@ public class LoadMoreRecyclerView extends AdRecyclerView {
         protected float mHeight;
 
         public LoadingRenderer(Context context) {
-            mWidth = mHeight = DipUtil.dip2px(context, 56F);
+            mWidth = mHeight = DipUtil.dip2px(context, 30F);//56
             mDuration = ANIMATION_DURATION;
             setupAnimators();
         }
@@ -531,8 +531,8 @@ public class LoadMoreRecyclerView extends AdRecyclerView {
         private static final float START_TRIM_DURATION_OFFSET = 0.5f;
         private static final float END_TRIM_DURATION_OFFSET = 1.0f;
 
-        private static final float DEFAULT_CENTER_RADIUS = 12.5f;
-        private static final float DEFAULT_STROKE_WIDTH = 2.5f;
+        private static final float DEFAULT_CENTER_RADIUS = 5f;//12.5f
+        private static final float DEFAULT_STROKE_WIDTH = 1.5f;//2.5
 
         private static final int[] DEFAULT_LEVEL_COLORS = new int[]{
                 Color.parseColor("#55ffffff"),
