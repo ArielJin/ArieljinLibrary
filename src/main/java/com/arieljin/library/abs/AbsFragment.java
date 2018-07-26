@@ -6,7 +6,6 @@ import com.arieljin.library.utils.DestoryUtil;
 
 public class AbsFragment extends Fragment {
 
-
     @Override
     public void onDestroy() {
         super.onDestroy();

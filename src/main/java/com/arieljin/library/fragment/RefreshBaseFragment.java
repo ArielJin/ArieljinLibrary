@@ -1,12 +1,14 @@
-package com.arieljin.library.activity;
+package com.arieljin.library.fragment;
 
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.arieljin.library.R;
-import com.arieljin.library.abs.AbsActivity;
+import com.arieljin.library.abs.AbsFragment;
 import com.arieljin.library.impl.RefreshBaseImpl;
 import com.arieljin.library.interfaces.RefreshBaseInterface;
 import com.arieljin.library.interfaces.RefreshBaseTaskInterface;
@@ -14,30 +16,28 @@ import com.arieljin.library.task.RefreshBaseTask;
 
 import java.io.Serializable;
 
-public class RefreshBaseActivity extends AbsActivity implements RefreshBaseTaskInterface {
+/**
+ * @time 2018/7/26.
+ * @email ariel.jin@tom.com
+ */
+public abstract class RefreshBaseFragment extends AbsFragment implements RefreshBaseTaskInterface {
 
     private RefreshBaseInterface refreshBaseInterface;
 
+
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.activity_refresh_base, container, false);
+        SwipeRefreshLayout swipeRefreshLayout = view.findViewById(R.id.ariel_base_srl);
+        swipeRefreshLayout.addView(onCreateContentView(inflater, container, savedInstanceState));
+        refreshBaseInterface = new RefreshBaseImpl(swipeRefreshLayout);
+        init();
+        return view;
     }
 
-    @Override
-    public void setContentView(View view) {
-        super.setContentView(R.layout.activity_refresh_base);
-        SwipeRefreshLayout swipeRefreshLayout = this.findViewById(R.id.ariel_base_srl);
-        swipeRefreshLayout.addView(view);
-        refreshBaseInterface = new RefreshBaseImpl(swipeRefreshLayout);
+    protected void init(){
 
-    }
-
-    @Override
-    public void setContentView(int layoutResID) {
-        super.setContentView(R.layout.activity_refresh_base);
-        SwipeRefreshLayout swipeRefreshLayout = this.findViewById(R.id.ariel_base_srl);
-        swipeRefreshLayout.addView(LayoutInflater.from(this).inflate(layoutResID, null));
-        refreshBaseInterface = new RefreshBaseImpl(swipeRefreshLayout);
     }
 
     @Override
@@ -48,6 +48,7 @@ public class RefreshBaseActivity extends AbsActivity implements RefreshBaseTaskI
     @Override
     public void setSwipeRefreshLayoutEnabled(boolean enabled) {
         refreshBaseInterface.setSwipeRefreshLayoutEnabled(enabled);
+
     }
 
     @Override
@@ -66,4 +67,7 @@ public class RefreshBaseActivity extends AbsActivity implements RefreshBaseTaskI
     public void setOnRefreshListener() {
         refreshBaseInterface.setOnRefreshListener();
     }
+
+    public abstract View onCreateContentView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState);
+
 }

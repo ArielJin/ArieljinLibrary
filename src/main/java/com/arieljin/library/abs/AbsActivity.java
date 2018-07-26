@@ -42,33 +42,36 @@ public class AbsActivity extends AppCompatActivity implements ActivityInterface 
 
     }
 
-    private void initWindows(){
+    private void initWindows() {
 
-        if (setWindowsFullScreen() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            View decorView = getWindow().getDecorView();
-            decorView.setSystemUiVisibility(
-                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if (setWindowsFullScreen()) {
 
+                View decorView = getWindow().getDecorView();
+                decorView.setSystemUiVisibility(
+                        View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
 //                     | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
 //                    | View.SYSTEM_UI_FLAG_FULLSCREEN
 //                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
 //                getWindow().setNavigationBarColor(Color.TRANSPARENT);
+                getWindow().setStatusBarColor(Color.TRANSPARENT);
+                return;
+            }
+
             getWindow().setStatusBarColor(setStatusBarColor());
 
         }
 
     }
 
-    protected boolean setWindowsFullScreen(){
-        return true;
+    protected boolean setWindowsFullScreen() {
+        return false;
     }
 
     protected int setStatusBarColor() {
-        if (!setWindowsFullScreen())
-            throw new IllegalStateException("Method setWindowsFullScreen() must be return true");
-        return Color.TRANSPARENT;
+        return Color.WHITE;
     }
 
 }

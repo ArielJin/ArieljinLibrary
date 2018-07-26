@@ -5,13 +5,14 @@ import android.content.Context;
 import com.arieljin.library.abs.AbsRequest;
 import com.arieljin.library.abs.AbsTask;
 import com.arieljin.library.activity.RefreshBaseActivity;
+import com.arieljin.library.interfaces.RefreshBaseInterface;
 import com.arieljin.library.listener.OnTaskCompleteListener;
 import com.arieljin.library.listener.OnTaskStatusChangeListener;
 import com.arieljin.library.utils.ToastUtil;
 
 import java.io.Serializable;
 
-public abstract class RefreshBaseTask<T extends Serializable> extends AbsTask<T> implements OnTaskStatusChangeListener{
+public abstract class RefreshBaseTask<T extends Serializable> extends AbsTask<T> implements OnTaskStatusChangeListener {
 
     public RefreshBaseTask(Context context, AbsRequest request) {
         super(context, request);
@@ -45,46 +46,46 @@ public abstract class RefreshBaseTask<T extends Serializable> extends AbsTask<T>
 
 
     private boolean canStart() {
-        if (weakReference != null && weakReference.get() != null && weakReference.get() instanceof RefreshBaseActivity)
+        if (weakReference != null && weakReference.get() != null && weakReference.get() instanceof RefreshBaseInterface)
             return true;
-        ToastUtil.showErrorToast("current activity must be extends RefreshBaseActivity!");
+        ToastUtil.showErrorToast("current activity must be implements RefreshBaseTaskInterface!");
         return false;
     }
 
     @Override
     public void onTaskStart() {
-        ((RefreshBaseActivity)weakReference.get()).onTaskStart();
+        ((RefreshBaseInterface) weakReference.get()).onTaskStart();
     }
 
     @Override
     public boolean onTaskSending() {
-        return ((RefreshBaseActivity)weakReference.get()).onTaskSending();
+        return ((RefreshBaseInterface) weakReference.get()).onTaskSending();
     }
 
     @Override
     public void onTaskComplete() {
-        ((RefreshBaseActivity)weakReference.get()).onTaskComplete();
+        ((RefreshBaseInterface) weakReference.get()).onTaskComplete();
 
     }
 
     @Override
     public void onTaskLoadMoreComplete() {
 
-        ((RefreshBaseActivity)weakReference.get()).onTaskLoadMoreComplete();
+        ((RefreshBaseInterface) weakReference.get()).onTaskLoadMoreComplete();
 
     }
 
     @Override
     public void onTaskFailed() {
 
-        ((RefreshBaseActivity)weakReference.get()).onTaskFailed();
+        ((RefreshBaseInterface) weakReference.get()).onTaskFailed();
 
     }
 
     @Override
     public void onTaskCancel() {
 
-        ((RefreshBaseActivity)weakReference.get()).onTaskCancel();
+        ((RefreshBaseInterface) weakReference.get()).onTaskCancel();
 
     }
 
