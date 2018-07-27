@@ -12,6 +12,7 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.StateListDrawable;
 import android.os.Build;
+import android.support.constraint.ConstraintLayout;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
@@ -84,17 +85,17 @@ public final class ViewUtil {
         return sourceImg;
     }
 
-    public static Drawable getPressedDrawable(Context context, int resId, int number){
+    public static Drawable getPressedDrawable(Context context, int resId, int number) {
 
         StateListDrawable stateListDrawable = new StateListDrawable();
         stateListDrawable.addState(new int[]{-android.R.attr.state_pressed}, context.getResources().getDrawable(resId));
-        stateListDrawable.addState(new int[]{android.R.attr.state_pressed}, new BitmapDrawable(getTransparentBitmap(BitmapFactory.decodeResource(context.getResources(),resId),number)));
+        stateListDrawable.addState(new int[]{android.R.attr.state_pressed}, new BitmapDrawable(getTransparentBitmap(BitmapFactory.decodeResource(context.getResources(), resId), number)));
 
         return stateListDrawable;
 
     }
 
-    public static Drawable getPressedDrawable(Context context, Bitmap bitmap, int number){
+    public static Drawable getPressedDrawable(Context context, Bitmap bitmap, int number) {
 
         StateListDrawable stateListDrawable = new StateListDrawable();
         stateListDrawable.addState(new int[]{-android.R.attr.state_pressed}, new BitmapDrawable(context.getResources(), bitmap));
@@ -104,24 +105,24 @@ public final class ViewUtil {
 
     }
 
-    public static Drawable getWhiteLeftBackDrawable(Context context,int number){
-        return getPressedDrawable(context, context.getResources().getIdentifier("ic_arrow_left_white_kaqu","drawable",context.getPackageName()),number);
+    public static Drawable getWhiteLeftBackDrawable(Context context, int number) {
+        return getPressedDrawable(context, context.getResources().getIdentifier("ic_arrow_left_white_kaqu", "drawable", context.getPackageName()), number);
     }
 
-    public static Drawable getBlackLeftBackDrawable(Context context,int number){
-        return getPressedDrawable(context, context.getResources().getIdentifier("ic_arrow_left_black_kaqu","drawable",context.getPackageName()),number);
+    public static Drawable getBlackLeftBackDrawable(Context context, int number) {
+        return getPressedDrawable(context, context.getResources().getIdentifier("ic_arrow_left_black_kaqu", "drawable", context.getPackageName()), number);
     }
 
-    public static Drawable getBtnBackgroundDrawable(int unPressedColor,int pressedColor,int cornerRadius){
+    public static Drawable getBtnBackgroundDrawable(int unPressedColor, int pressedColor, int cornerRadius) {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 
             GradientDrawable drawable = new GradientDrawable();
-            drawable.setColor(new ColorStateList(new int[][]{{-android.R.attr.state_pressed},{android.R.attr.state_pressed}},new int[]{unPressedColor,pressedColor}));
+            drawable.setColor(new ColorStateList(new int[][]{{-android.R.attr.state_pressed}, {android.R.attr.state_pressed}}, new int[]{unPressedColor, pressedColor}));
             drawable.setCornerRadius(cornerRadius);
             return drawable;
 
-        }else {
+        } else {
             GradientDrawable unPDrawable = new GradientDrawable();
             unPDrawable.setColor(unPressedColor);
             unPDrawable.setCornerRadius(cornerRadius);
@@ -131,8 +132,8 @@ public final class ViewUtil {
             drawable.setCornerRadius(cornerRadius);
 
             StateListDrawable listDrawable = new StateListDrawable();
-            listDrawable.addState(new int[]{-android.R.attr.state_pressed},unPDrawable);
-            listDrawable.addState(new int[]{android.R.attr.state_pressed},drawable);
+            listDrawable.addState(new int[]{-android.R.attr.state_pressed}, unPDrawable);
+            listDrawable.addState(new int[]{android.R.attr.state_pressed}, drawable);
             return listDrawable;
 
         }
@@ -161,7 +162,7 @@ public final class ViewUtil {
     public static void setLayoutTransition(LinearLayout linearLayout) {
         if (linearLayout == null)
             return;
-        if(linearLayout.getContext() == null)
+        if (linearLayout.getContext() == null)
             return;
         LayoutTransition transition = new LayoutTransition();
 //        当一个View在ViewGroup中出现时，对此View对其他View位置造成影响，对其他View设置的动画
@@ -208,5 +209,23 @@ public final class ViewUtil {
             }
         });
         animator.start();
+    }
+
+    private static int getStatusBarHeight(Context context) {
+        int statusBarHeight = -1;
+
+        int resourceId = context.getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            //根据资源ID获取响应的尺寸值
+            statusBarHeight = context.getResources().getDimensionPixelSize(resourceId);
+        }
+        return statusBarHeight;
+    }
+
+    public static void setViewToStatusBar(View statusBarView, int statusBarcolor) {
+        statusBarView.setBackgroundColor(statusBarcolor);
+        int statusBarHeight = ViewUtil.getStatusBarHeight(statusBarView.getContext());
+        if (statusBarHeight != -1)
+            statusBarView.setLayoutParams(new ConstraintLayout.LayoutParams(DipUtil.dip2px(statusBarView.getContext(), 0), statusBarHeight));
     }
 }

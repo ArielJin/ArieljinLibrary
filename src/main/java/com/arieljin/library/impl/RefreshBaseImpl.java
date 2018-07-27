@@ -95,4 +95,5 @@ public class RefreshBaseImpl implements RefreshBaseInterface {
             }
         });
     }
+
 }
