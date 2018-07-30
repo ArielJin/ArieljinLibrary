@@ -83,6 +83,8 @@ public class IndicatorViewPager extends ConstraintLayout {
 
             }
 
+            viewPager.setAdapter(adapter);
+
             setVisibility(VISIBLE);
 
         } else {
