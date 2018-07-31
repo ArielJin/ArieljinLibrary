@@ -3,11 +3,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.v4.widget.SwipeRefreshLayout
+    <com.arieljin.library.widget.FixVpSwipeRefreshLayout
         android:id="@+id/ariel_base_srl"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    </android.support.v4.widget.SwipeRefreshLayout>
+    </com.arieljin.library.widget.FixVpSwipeRefreshLayout>
 
 </android.support.constraint.ConstraintLayout>

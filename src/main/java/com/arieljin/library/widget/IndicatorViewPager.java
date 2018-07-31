@@ -11,17 +11,21 @@ import android.support.constraint.ConstraintLayout;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
 import com.arieljin.library.utils.DipUtil;
+import com.arieljin.library.widget.adapter.BasePagerAdapter;
+
+import java.util.List;
 
 /**
  * @time 2018/7/30.
  * @email ariel.jin@tom.com
  */
-public class IndicatorViewPager extends ConstraintLayout {
+public class IndicatorViewPager extends ConstraintLayout implements ViewPager.OnPageChangeListener {
 
     private ViewPager viewPager;
     private RadioGroup indicatorGroup;
@@ -47,7 +51,6 @@ public class IndicatorViewPager extends ConstraintLayout {
         viewPager = new ViewPager(getContext());
         LayoutParams viewPagerLP = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         viewPager.setLayoutParams(viewPagerLP);
-        viewPager.setBackgroundColor(Color.GREEN);
 
 
         indicatorGroup = new RadioGroup(getContext());
@@ -64,26 +67,67 @@ public class IndicatorViewPager extends ConstraintLayout {
         addView(indicatorGroup);
     }
 
-    public void setAdapter(PagerAdapter adapter) {
+    public void setAdapter(final BasePagerAdapter adapter) {
 
-        if (adapter != null && adapter.getCount() > 0) {
+        if (adapter == null)
+            throw new NullPointerException("adapter not null!");
 
-            if (adapter.getCount() == 1) {
-                indicatorGroup.removeAllViews();
+        invalidateViews(adapter.getCount(), new OnPagerItemCountChangeListener() {
+            @Override
+            public void onPagerItemCountChanged() {
+                viewPager.setAdapter(adapter);
+
+            }
+        });
+
+
+    }
+
+
+    public void setAdapterList(final List list) {
+
+        if (viewPager.getAdapter() == null)
+            throw new NullPointerException("adapter not null!");
+        if ((list != null && list.size() == indicatorGroup.getChildCount()) || (list == null && indicatorGroup.getChildCount() == 0))
+            ((BasePagerAdapter) viewPager.getAdapter()).setList(list);
+        invalidateViews(list != null ? list.size() : 0, new OnPagerItemCountChangeListener() {
+            @Override
+            public void onPagerItemCountChanged() {
+                ((BasePagerAdapter) viewPager.getAdapter()).setList(list);
+            }
+        });
+
+
+    }
+
+    private interface OnPagerItemCountChangeListener {
+        void onPagerItemCountChanged();
+    }
+
+    private void invalidateViews(int itemCount, OnPagerItemCountChangeListener onPagerItemCountChangeListener) {
+
+        if (itemCount > 0) {
+
+            indicatorGroup.removeAllViews();
+            if (itemCount == 1) {
                 indicatorGroup.setVisibility(GONE);
             } else {
 
-                for (int i = 0; i < adapter.getCount(); i++) {
+                for (int i = 0; i < itemCount; i++) {
                     IndicatorView indicatorView = new IndicatorView(getContext());
-                    if (i == 0)
-                        indicatorView.setChecked(true);
                     indicatorGroup.addView(indicatorView);
                 }
                 indicatorGroup.setVisibility(VISIBLE);
 
+                viewPager.setOnPageChangeListener(this);
+                ((IndicatorView) indicatorGroup.getChildAt(0)).setChecked(true);
+
             }
 
-            viewPager.setAdapter(adapter);
+            if (onPagerItemCountChangeListener != null) {
+                onPagerItemCountChangeListener.onPagerItemCountChanged();
+            }
+
 
             setVisibility(VISIBLE);
 
@@ -95,17 +139,25 @@ public class IndicatorViewPager extends ConstraintLayout {
 
         }
 
-
     }
 
 
-//    public void setList(List list) {
-//
-//        if (viewPager.getAdapter() == null)
-//            throw new NullPointerException("adapter not null!");
-//
-//
-//    }
+    @Override
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+    }
+
+    @Override
+    public void onPageSelected(int position) {
+        if (indicatorGroup.getChildCount() > 1)
+            ((IndicatorView) indicatorGroup.getChildAt(position)).setChecked(true);
+
+    }
+
+    @Override
+    public void onPageScrollStateChanged(int state) {
+
+    }
 
 
     @SuppressLint("AppCompatCustomView")
@@ -169,9 +221,15 @@ public class IndicatorViewPager extends ConstraintLayout {
         @Override
         public void setChecked(boolean checked) {
             super.setChecked(checked);
-            RadioGroup.LayoutParams layoutParams = (RadioGroup.LayoutParams) getLayoutParams();
-            if (layoutParams != null)
+            ViewGroup.LayoutParams layoutParams = getLayoutParams();
+            if (layoutParams != null && layoutParams instanceof RadioGroup.LayoutParams) {
+
                 layoutParams.width = DipUtil.dip2px(getContext(), checked ? 8 : 4);
+                setLayoutParams(layoutParams);
+
+
+            }
+
         }
     }
 }
