@@ -225,7 +225,15 @@ public final class ViewUtil {
     public static void setViewToStatusBar(View statusBarView, int statusBarcolor) {
         statusBarView.setBackgroundColor(statusBarcolor);
         int statusBarHeight = ViewUtil.getStatusBarHeight(statusBarView.getContext());
-        if (statusBarHeight != -1)
-            statusBarView.setLayoutParams(new ConstraintLayout.LayoutParams(DipUtil.dip2px(statusBarView.getContext(), 0), statusBarHeight));
+        if (statusBarHeight != -1){
+
+            ViewGroup.LayoutParams statusBarViewLp = statusBarView.getLayoutParams();
+            if (statusBarViewLp != null) {
+                statusBarViewLp.height = statusBarHeight;
+                statusBarView.setLayoutParams(statusBarViewLp);
+            }
+
+        }
+
     }
 }
