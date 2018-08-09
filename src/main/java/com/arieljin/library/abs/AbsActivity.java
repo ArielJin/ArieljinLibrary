@@ -96,6 +96,14 @@ public class AbsActivity extends AppCompatActivity implements ActivityInterface 
 //
 //    }
 
+    protected void initView(){
+
+    }
+
+    protected void initData(){
+
+    }
+
 
     protected int setStatusBarColor() {
         return Color.WHITE;

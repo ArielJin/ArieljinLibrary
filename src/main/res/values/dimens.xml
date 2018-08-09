@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="ariel_dp_8">8dp</dimen>
+    <dimen name="ariel_dp_16">16dp</dimen>
+    <dimen name="ariel_dp_20">20dp</dimen>
+
+    <dimen name="ariel_dp_40">40dp</dimen>
+</resources>
