@@ -6,4 +6,7 @@
     <dimen name="ariel_dp_20">20dp</dimen>
 
     <dimen name="ariel_dp_40">40dp</dimen>
+
+    <dimen name="ariel_text_size_4">4sp</dimen>
+    <dimen name="ariel_text_size_14">14sp</dimen>
 </resources>

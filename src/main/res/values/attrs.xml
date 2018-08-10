@@ -38,4 +38,15 @@
         <!--    <attr name="pstsIndicatorWrap" format="boolean" />-->
     </declare-styleable>
 
+
+    <declare-styleable name="ColorSizeTrackView">
+        <attr name="cstvText" format="string"/>
+        <attr name="cstvText_size" format="dimension"/>
+        <attr name="cstvText_origin_color" format="color"/>
+        <attr name="cstvText_change_color" format="color"/>
+        <attr name="cstvProgress" format="float"/>
+        <attr name="cstvDirection" format="integer"/>
+    </declare-styleable>
+
+
 </resources>
