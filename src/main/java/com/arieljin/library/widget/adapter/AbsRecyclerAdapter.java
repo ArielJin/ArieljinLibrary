@@ -32,8 +32,11 @@ public class AbsRecyclerAdapter<T extends Serializable> extends RecyclerView.Ada
     public void onBindViewHolder(AbsRecyclerVH holder, int position) {
         AbsAdapterRender render = (AbsAdapterRender) holder.itemView.getTag(R.id.ariel_recycler_render_item);
         T t = list.get(position);
-        render.fitDatas(t);
-        render.fitEvents(t);
+        if (render != null) {
+            render.fitDatas(t);
+            render.fitEvents(t);
+        }
+
     }
 
     @Override

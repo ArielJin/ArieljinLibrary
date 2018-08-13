@@ -48,5 +48,11 @@
         <attr name="cstvDirection" format="integer"/>
     </declare-styleable>
 
+    <declare-styleable name="recycler_swipe_SwipeMenuLayout">
+        <attr name="leftViewId" format="reference"/>
+        <attr name="rightViewId" format="reference"/>
+        <attr name="contentViewId" format="reference"/>
+    </declare-styleable>
+
 
 </resources>

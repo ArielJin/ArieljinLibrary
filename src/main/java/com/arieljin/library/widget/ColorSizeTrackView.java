@@ -15,6 +15,7 @@ import android.util.TypedValue;
 import android.view.View;
 
 import com.arieljin.library.R;
+import com.arieljin.library.widget.view.ViewHelper;
 
 /**
  * @time 2018/8/10.
@@ -43,7 +44,7 @@ public final class ColorSizeTrackView extends View {
     private String mText = "";
     private Paint mPaint;
     private int mTextSize = getResources().getDimensionPixelSize(R.dimen.ariel_text_size_14);
-    private int mTrackTextSize = getResources().getDimensionPixelSize(R.dimen.ariel_text_size_4);
+//    private int mTrackTextSize = getResources().getDimensionPixelSize(R.dimen.ariel_text_size_4);
 
     private int mTextOriginColor = 0xff000000;
     private int mTextChangeColor = 0xffff0000;
@@ -254,11 +255,16 @@ public final class ColorSizeTrackView extends View {
         return mProgress;
     }
 
+    float zoomText = (float) getResources().getDimensionPixelSize(R.dimen.ariel_text_size_4)/getResources().getDimensionPixelSize(R.dimen.ariel_text_size_18);
     public void setProgress(float progress) {
         this.mProgress = progress;
         //-----------------------
-        mPaint.setTextSize(progress * mTrackTextSize + mTextSize);
+//        mPaint.setTextSize(progress  + mTextSize);
         mPaint.setFakeBoldText(progress >= 0.9);
+//        ViewHelper.setPivotX(this, this.getMeasuredWidth() * 0.5f);
+//        ViewHelper.setPivotY(this, this.getMeasuredHeight() * 0.5f);
+        ViewHelper.setScaleX(this, 1- zoomText * (1-progress));
+        ViewHelper.setScaleY(this, 1- zoomText * (1-progress));
         requestLayout();
         //-----------------------
         invalidate();
@@ -269,8 +275,8 @@ public final class ColorSizeTrackView extends View {
     }
 
     public void setTextSize(int mTextSize) {
-        this.mTextSize = mTextSize;
-        mPaint.setTextSize(mTextSize + mTrackTextSize);
+        this.mTextSize = getResources().getDimensionPixelSize(R.dimen.ariel_text_size_18);
+        mPaint.setTextSize(this.mTextSize);
         requestLayout();
         invalidate();
     }
@@ -281,15 +287,15 @@ public final class ColorSizeTrackView extends View {
         invalidate();
     }
 
-    public void initTextSizeAndProgress(int mTextSize,float progress) {
-
-        this.mTextSize = mTextSize + getTrackTextSize();
-//        mPaint.setTextSize(this.mTextSize);
-        mPaint.setTextSize(progress * mTrackTextSize + mTextSize);
-        mPaint.setFakeBoldText(progress >= 0.9);
-        requestLayout();
-        invalidate();
-    }
+//    public void initTextSizeAndProgress(int mTextSize,float progress) {
+//
+//        this.mTextSize = mTextSize + getTrackTextSize();
+////        mPaint.setTextSize(this.mTextSize);
+//        mPaint.setTextSize(progress * mTrackTextSize + mTextSize);
+//        mPaint.setFakeBoldText(progress >= 0.9);
+//        requestLayout();
+//        invalidate();
+//    }
 
     public int getTextOriginColor() {
         return mTextOriginColor;
@@ -309,9 +315,9 @@ public final class ColorSizeTrackView extends View {
         invalidate();
     }
 
-    public int getTrackTextSize() {
-        return mTrackTextSize;
-    }
+//    public int getTrackTextSize() {
+//        return mTrackTextSize;
+//    }
 
     //    private int dp2px(float dpVal) {
 //        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,

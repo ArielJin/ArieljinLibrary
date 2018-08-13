@@ -8,12 +8,9 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-
-import com.arieljin.library.R;
 
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
@@ -85,10 +82,10 @@ public class ColorSizeTrackTabLayout extends TabLayout {
     @Override
     public void addTab(@NonNull Tab tab, int position, boolean setSelected) {
         ColorSizeTrackView colorTrackView = new ColorSizeTrackView(getContext());
-        colorTrackView.setProgress(setSelected ? 1 : 0);
+//        colorTrackView.setProgress(setSelected ? 1 : 0);
         colorTrackView.setText(tab.getText() + "");
         colorTrackView.setTextSize(mTabTextSize);
-//        colorTrackView.initTextSizeAndProgress(mTabTextSize,setSelected ? 1 : 0);
+        colorTrackView.setProgress(setSelected ? 1 : 0);
         colorTrackView.setTag(position);
         colorTrackView.setTextChangeColor(mTabSelectedTextColor);
         colorTrackView.setTextOriginColor(mTabTextColor);
