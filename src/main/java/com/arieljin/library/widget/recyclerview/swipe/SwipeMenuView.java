@@ -20,14 +20,14 @@ import java.util.List;
  * @time 2018/8/13.
  * @email ariel.jin@tom.com
  */
-public class SwipeMenuView extends LinearLayout implements View.OnClickListener {
+public class SwipeMenuView extends LinearLayout {
 
 
 
     private SwipeSwitch mSwipeSwitch;
-//    private SwipeMenuItemClickListener mItemClickListener;
+    private OnSwipeMenuItemClickListener mItemClickListener;
     private int mDirection;
-    private RecyclerView.ViewHolder mAdapterVIewHolder;
+    private RecyclerView.ViewHolder mAdapterViewHolder;
 
     public SwipeMenuView(Context context) {
         this(context, null);
@@ -41,11 +41,11 @@ public class SwipeMenuView extends LinearLayout implements View.OnClickListener 
         super(context, attrs, defStyleAttr);
     }
 
-    public void createMenu(SwipeMenu swipeMenu, SwipeSwitch swipeSwitch, /*SwipeMenuItemClickListener swipeMenuItemClickListener, */int direction) {
+    public void createMenu(SwipeMenu swipeMenu, SwipeSwitch swipeSwitch, OnSwipeMenuItemClickListener swipeMenuItemClickListener, int direction) {
         removeAllViews();
 
         this.mSwipeSwitch = swipeSwitch;
-//        this.mItemClickListener = swipeMenuItemClickListener;
+        this.mItemClickListener = swipeMenuItemClickListener;
         this.mDirection = direction;
 
         List<SwipeMenuItem> items = swipeMenu.getMenuItems();
@@ -54,11 +54,11 @@ public class SwipeMenuView extends LinearLayout implements View.OnClickListener 
         }
     }
 
-    public void bindViewHolder(RecyclerView.ViewHolder adapterVIewHolder) {
-        this.mAdapterVIewHolder = adapterVIewHolder;
+    public void bindViewHolder(RecyclerView.ViewHolder adapterViewHolder) {
+        this.mAdapterViewHolder = adapterViewHolder;
     }
 
-    private void addItem(SwipeMenuItem item, int index) {
+    private void addItem(SwipeMenuItem item, final int index) {
         LayoutParams params = new LayoutParams(item.getWidth(), item.getHeight());
         params.weight = item.getWeight();
         LinearLayout parent = new LinearLayout(getContext());
@@ -67,7 +67,18 @@ public class SwipeMenuView extends LinearLayout implements View.OnClickListener 
         parent.setOrientation(VERTICAL);
         parent.setLayoutParams(params);
         ViewCompat.setBackground(parent, item.getBackground());
-        parent.setOnClickListener(this);
+        parent.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (mItemClickListener != null && mSwipeSwitch.isMenuOpen()) {
+//            SwipeMenuBridge menuBridge = (SwipeMenuBridge) v.getTag();
+//            menuBridge.mAdapterPosition = mAdapterViewHolder.getAdapterPosition();
+                    mItemClickListener.onItemClick(v,mAdapterViewHolder.getAdapterPosition(), index);
+                }
+
+            }
+        });
         addView(parent);
 
 //        SwipeMenuBridge menuBridge = new SwipeMenuBridge(mDirection, index, mSwipeSwitch, parent);
@@ -109,15 +120,6 @@ public class SwipeMenuView extends LinearLayout implements View.OnClickListener 
         if (typeface != null)
             textView.setTypeface(typeface);
         return textView;
-    }
-
-    @Override
-    public void onClick(View v) {
-//        if (mItemClickListener != null && mSwipeSwitch.isMenuOpen()) {
-//            SwipeMenuBridge menuBridge = (SwipeMenuBridge) v.getTag();
-//            menuBridge.mAdapterPosition = mAdapterVIewHolder.getAdapterPosition();
-//            mItemClickListener.onItemClick(menuBridge);
-//        }
     }
 
 }

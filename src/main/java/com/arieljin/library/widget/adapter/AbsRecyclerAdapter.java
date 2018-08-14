@@ -24,13 +24,15 @@ public class AbsRecyclerAdapter<T extends Serializable> extends RecyclerView.Ada
     public AbsRecyclerVH onCreateViewHolder(ViewGroup parent, int viewType) {
 
         AbsRecyclerVH vh = render.getReusableComponent(parent);
-        vh.itemView.setTag(R.id.ariel_recycler_render_item, render);
+//        vh.itemView.setTag(R.id.ariel_recycler_render_item, render);
+        vh.render = this.render;
         return vh;
     }
 
     @Override
     public void onBindViewHolder(AbsRecyclerVH holder, int position) {
-        AbsAdapterRender render = (AbsAdapterRender) holder.itemView.getTag(R.id.ariel_recycler_render_item);
+//        AbsAdapterRender render = (AbsAdapterRender) holder.itemView.getTag(R.id.ariel_recycler_render_item);
+        AbsAdapterRender render = holder.render;
         T t = list.get(position);
         if (render != null) {
             render.fitDatas(t);
@@ -47,6 +49,7 @@ public class AbsRecyclerAdapter<T extends Serializable> extends RecyclerView.Ada
     public static class AbsRecyclerVH extends RecyclerView.ViewHolder {
 
         private SparseArray<View> holder = null;
+        private AbsAdapterRender render;
 
         public AbsRecyclerVH(View itemView) {
             super(itemView);

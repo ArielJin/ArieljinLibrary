@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.view.ViewParent;
 
 import com.arieljin.library.R;
+import com.arieljin.library.widget.recyclerview.swipe.OnSwipeMenuItemClickListener;
 import com.arieljin.library.widget.recyclerview.swipe.SwipeMenu;
 import com.arieljin.library.widget.recyclerview.swipe.SwipeMenuCreator;
 import com.arieljin.library.widget.recyclerview.swipe.SwipeMenuDirection;
@@ -32,6 +33,8 @@ public class AdRecyclerView extends RecyclerView {
     private SwipeMenuCreator mSwipeMenuCreator;
 
     protected SwipeMenuLayout mOldSwipedLayout;
+    private OnSwipeMenuItemClickListener mSwipeMenuItemClickListener;
+
     private int mDownX;
     private int mDownY;
     protected int mOldTouchedPosition = INVALID_POSITION;
@@ -48,7 +51,7 @@ public class AdRecyclerView extends RecyclerView {
     }
 
     public AdRecyclerView(Context context, @Nullable AttributeSet attrs) {
-        this(context, attrs,0);
+        this(context, attrs, 0);
     }
 
     public AdRecyclerView(Context context, @Nullable AttributeSet attrs, int defStyle) {
@@ -77,6 +80,25 @@ public class AdRecyclerView extends RecyclerView {
         }
     };
 
+    /**
+     * Default swipe menu item click listener.
+     */
+    private OnSwipeMenuItemClickListener mDefaultMenuItemClickListener = new OnSwipeMenuItemClickListener() {
+
+        @Override
+        public void onItemClick(View view, int mAdapterPosition, int index) {
+            if (mSwipeMenuItemClickListener != null) {
+                int position = mAdapterPosition - getHeaderItemCount();
+                if (position > 0)
+                    mSwipeMenuItemClickListener.onItemClick(view, position, index);
+            }
+        }
+    };
+
+    public void setOnSwipeMenuItemClickListener(OnSwipeMenuItemClickListener mSwipeMenuItemClickListener) {
+        this.mSwipeMenuItemClickListener = mSwipeMenuItemClickListener;
+    }
+
     @Override
     public void setAdapter(Adapter adapter) {
         if (mAdapterWrapper != null) {
@@ -92,6 +114,7 @@ public class AdRecyclerView extends RecyclerView {
 
         mAdapterWrapper = new AdapterWrapper(adapter);
         mAdapterWrapper.setSwipeMenuCreator(mDefaultMenuCreator);
+        mAdapterWrapper.setOnSwipeMenuItemClickListener(mDefaultMenuItemClickListener);
         super.setAdapter(mAdapterWrapper);
 
         if (mHeaderViewList.size() > 0)
@@ -279,6 +302,7 @@ public class AdRecyclerView extends RecyclerView {
 
 
         private SwipeMenuCreator mSwipeMenuCreator;
+        private OnSwipeMenuItemClickListener mSwipeMenuItemClickListener;
 
         AdapterWrapper(RecyclerView.Adapter adapter) {
             mAdapter = adapter;
@@ -333,7 +357,7 @@ public class AdRecyclerView extends RecyclerView {
                 SwipeMenuView swipeLeftMenuView = (SwipeMenuView) swipeMenuLayout.findViewById(R.id.swipe_left);
                 // noinspection WrongConstant
                 swipeLeftMenuView.setOrientation(swipeLeftMenu.getOrientation());
-                swipeLeftMenuView.createMenu(swipeLeftMenu, swipeMenuLayout,/* mSwipeMenuItemClickListener, */SwipeMenuDirection.LEFT_DIRECTION);
+                swipeLeftMenuView.createMenu(swipeLeftMenu, swipeMenuLayout, mSwipeMenuItemClickListener, SwipeMenuDirection.LEFT_DIRECTION);
             }
 
             int rightMenuCount = swipeRightMenu.getMenuItems().size();
@@ -341,7 +365,7 @@ public class AdRecyclerView extends RecyclerView {
                 SwipeMenuView swipeRightMenuView = (SwipeMenuView) swipeMenuLayout.findViewById(R.id.swipe_right);
                 // noinspection WrongConstant
                 swipeRightMenuView.setOrientation(swipeRightMenu.getOrientation());
-                swipeRightMenuView.createMenu(swipeRightMenu, swipeMenuLayout, /*mSwipeMenuItemClickListener,*/ SwipeMenuDirection.RIGHT_DIRECTION);
+                swipeRightMenuView.createMenu(swipeRightMenu, swipeMenuLayout, mSwipeMenuItemClickListener, SwipeMenuDirection.RIGHT_DIRECTION);
             }
 
 //            viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -352,6 +376,7 @@ public class AdRecyclerView extends RecyclerView {
 //            });
 
             if (leftMenuCount > 0 || rightMenuCount > 0) {
+
                 ViewGroup viewGroup = (ViewGroup) swipeMenuLayout.findViewById(R.id.swipe_content);
                 viewGroup.addView(viewHolder.itemView);
 
@@ -442,6 +467,10 @@ public class AdRecyclerView extends RecyclerView {
                 return getSupperClass(supperClass);
             }
             return aClass;
+        }
+
+        public void setOnSwipeMenuItemClickListener(OnSwipeMenuItemClickListener mSwipeMenuItemClickListener) {
+            this.mSwipeMenuItemClickListener = mSwipeMenuItemClickListener;
         }
 
         private boolean isHeaderView(int position) {
