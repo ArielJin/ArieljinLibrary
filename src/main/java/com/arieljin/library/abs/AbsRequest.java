@@ -25,14 +25,14 @@ import java.util.Map.Entry;
 @SuppressWarnings({ "deprecation", "serial" })
 public abstract class AbsRequest implements Serializable {
 	public OnFileUploadProgressListener listener;
-	public UploadType uploadType;
+//	public UploadType uploadType;
 
 	public AbsRequest() {
 	}
 
-	public AbsRequest(UploadType uploadType) {
-		this.uploadType = uploadType;
-	}
+//	public AbsRequest(UploadType uploadType) {
+//		this.uploadType = uploadType;
+//	}
 
 	public List<NameValuePair> getBody(Context context) {
 		init();
@@ -70,6 +70,8 @@ public abstract class AbsRequest implements Serializable {
 	}
 
 	protected void uploadFile(Context context, final ArrayList<NameValuePair> list, final Field field, final File file) {
+
+
 	}
 
 	public CustomMultipartEntity getMultipartEntity(Context context, AbsTask<?> task) {
@@ -117,9 +119,9 @@ public abstract class AbsRequest implements Serializable {
 	protected void init() {
 	}
 
-	public enum UploadType {
-		chat, photo, composition, head;
-	}
+//	public enum UploadType {
+//		chat, photo, composition, head;
+//	}
 
 	public void finish() {
 		for (Field field : getClass().getFields()) {

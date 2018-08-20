@@ -26,7 +26,7 @@ public class AbsActivityManager {
 
 	public static boolean onResume(AbsActivity activity) {
 		if (mCurrentActivity == null && activity != null) {
-			Context context = AbsApplication.getSuperApplication();
+			Context context = AbsApplication.getInstance();
 			synchronized (context) {
 				context.notifyAll();
 			}

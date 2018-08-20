@@ -71,11 +71,11 @@ public abstract class AbsTask<T extends Serializable> implements Runnable {
 //        TOAST_DIALOG,CIRCLE_DIALOG,ALL_DIALOG,NULL_DIALOG;
 //    }
 
-    protected static HashMap<String, String> headers;
+    protected HashMap<String, String> headers;
 
     protected abstract String getApiMethodName();
 
-    protected abstract T praseJson(JSONObject json) throws Throwable;
+    protected abstract T parseJson(JSONObject json) throws Throwable;
 
     public AbsTask(Context context, AbsRequest request) {
         this(context, request, (OnTaskCompleteListener) null);
@@ -137,27 +137,56 @@ public abstract class AbsTask<T extends Serializable> implements Runnable {
 //        }
     }
 
-    protected abstract String getRequesturl();
+//    protected abstract String getRequesturl();
 
-    protected T doInBackground(MyThread<T> thread) throws Throwable {
+    protected abstract T parseCompleteJson(JSONObject jsonObject);
+
+    protected T doInBackground(MyThread<T> thread) {
         Context context = weakReference.get();
         if (!thread.isCancelled && context != null && !isActivityFinishing(context)) {
-            JSONObject json = doMainInBackground();
-            if (json != null && json.length() > 0) {
-                return praseJson(json);
+            JSONObject json = null;
+            try {
+                json = doMainInBackground();
+
+                if (json != null && json.length() > 0)
+
+                    return parseCompleteJson(json);
+
+            } catch (Throwable throwable) {
+                throwable.printStackTrace();
+                if (needLast && needLastOnce) {
+                    JSONObject lastJson = null;
+                    try {
+                        lastJson = loadLastJson();
+                        if (lastJson != null) {
+                            return parseJson(lastJson);
+
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        failed("读取缓存数据异常");
+                    } catch (Throwable throwable1) {
+                        throwable1.printStackTrace();
+                        failed("解析缓存数据异常");
+                    }
+
+                } else {
+                    failed("网络异常");
+                }
             }
+
         }
         return null;
     }
 
     protected JSONObject doMainInBackground() throws Throwable {
 
-        String url;
-        if (!getApiMethodName().startsWith("http")) {
-            url = getRequesturl() + getApiMethodName();
-        } else {
-            url = getApiMethodName();
-        }
+        String url = getApiMethodName();
+//        if (!getApiMethodName().startsWith("http")) {
+//            url = getRequesturl() + getApiMethodName();
+//        } else {
+//            url = getApiMethodName();
+//        }
 
         Log.i("ArielJin", url);
 
@@ -510,7 +539,7 @@ public abstract class AbsTask<T extends Serializable> implements Runnable {
             String s = loadLastString();
             if (!TextUtils.isEmpty(s)) {
                 try {
-                    return praseJson(new JSONObject(s));
+                    return parseJson(new JSONObject(s));
                 } catch (Throwable throwable) {
                     throwable.printStackTrace();
                 }
@@ -519,15 +548,12 @@ public abstract class AbsTask<T extends Serializable> implements Runnable {
         return null;
     }
 
-    protected JSONObject loadLastJson() {
+    protected JSONObject loadLastJson() throws JSONException {
         if (weakReference.get() != null) {
             String s = loadLastString();
             if (!TextUtils.isEmpty(s)) {
-                try {
-                    return new JSONObject(s);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+
+                return new JSONObject(s);
             }
         }
         return null;
@@ -642,9 +668,10 @@ public abstract class AbsTask<T extends Serializable> implements Runnable {
     }
 
     protected void handleComplete(final T result, boolean isLoadMore) {
-        if (isDismissToastDialog()) {
-            if (progressBar != null) {
-                progressBar.setProgress(progress = 100);
+        if (isDismissToastDialog() || isRefreshBaseTask()) {
+            if (isDismissToastDialog() && progressBar != null) {
+                if (isRunOnMainThread())
+                    progressBar.setProgress(progress = 100);
             }
             new Thread() {
 
@@ -745,24 +772,23 @@ public abstract class AbsTask<T extends Serializable> implements Runnable {
                 }
             }
 
+//			ToastUtil.showErrorToast(error);
+        }
 
-            if (isRefreshBaseTask()) {
+        if (isRefreshBaseTask()) {
 
-                try {
+            try {
 
-                    if (((RefreshBaseTask<T>) this).onTaskSending()) {
+                if (((RefreshBaseTask<T>) this).onTaskSending()) {
 //                        circleDialog.dismiss();
-                        ((RefreshBaseTask<T>) this).onTaskFailed();
-                    }
-
-                } catch (Exception e) {
-
+                    ((RefreshBaseTask<T>) this).onTaskFailed();
                 }
 
+            } catch (Exception e) {
 
             }
 
-//			ToastUtil.showErrorToast(error);
+
         }
 
         if (onTaskPostCompleteListeners != null) {

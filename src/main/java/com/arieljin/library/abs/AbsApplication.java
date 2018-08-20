@@ -13,7 +13,7 @@ import android.util.Log;
 
 
 public abstract class AbsApplication extends Application {
-    private static AbsApplication absApplication;
+    protected static AbsApplication instance;
 
     public static String VERSION = "";
     public static int VERSION_CODE = 1;
@@ -24,16 +24,15 @@ public abstract class AbsApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        if (absApplication == null)
-            absApplication = this;
+        instance = this;
         setVersionInfo();
         PROCESS_NAME = getCurProcessName(this);
 
     }
 
 
-    public static AbsApplication getSuperApplication() {
-        return absApplication;
+    public static AbsApplication getInstance() {
+        return instance;
     }
 
     private void setVersionInfo() {
@@ -79,6 +78,12 @@ public abstract class AbsApplication extends Application {
         return "";
     }
 
+    public static boolean isOnMainProcess() {
+        return PROCESS_NAME.equals("com.bingdian.kaqu");
+    }
+
     protected abstract String getAppChannelMetaDataKey();
+
+    public abstract String getDB_NAME();
 
 }

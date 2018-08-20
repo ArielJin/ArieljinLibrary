@@ -77,7 +77,7 @@ public final class HttpManger {
 			HttpProtocolParams.setContentCharset(params, HTTP.UTF_8);
 			HttpProtocolParams.setUseExpectContinue(params, true);
 //			HttpProtocolParams.setUserAgent(params, "Mozilla/5.0(Linux;U;Android 2.2.1;en-us;Nexus One Build.FRG83) " + "AppleWebKit/553.1(KHTML,like Gecko) Version/4.0 Mobile Safari/533.1");
-			HttpProtocolParams.setUserAgent(params, AbsApplication.getSuperApplication().getPackageName() + "/" + AbsApplication.getSuperApplication().VERSION+" " + "/" + AbsApplication.getSuperApplication().getAppChannelMetaDataForTask() + "/ " +"Mozilla/5.0(Linux;U;Android "+ Build.VERSION.RELEASE +";"+ Locale.getDefault().getLanguage() + "-"+ Locale.getDefault().getCountry() +";"+Build.BRAND + " "+Build.MODEL+ "/"+Build.DISPLAY + ")");
+			HttpProtocolParams.setUserAgent(params, AbsApplication.getInstance().getPackageName() + "/" + AbsApplication.getInstance().VERSION+" " + "/" + AbsApplication.getInstance().getAppChannelMetaDataForTask() + "/ " +"Mozilla/5.0(Linux;U;Android "+ Build.VERSION.RELEASE +";"+ Locale.getDefault().getLanguage() + "-"+ Locale.getDefault().getCountry() +";"+Build.BRAND + " "+Build.MODEL+ "/"+Build.DISPLAY + ")");
 			//修改org.apache.http的主机名验证
 			try {
 				KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
@@ -165,7 +165,7 @@ public final class HttpManger {
 	}
 
 	public static boolean isNetworkAvailable() {
-		ConnectivityManager connectivity = (ConnectivityManager) AbsApplication.getSuperApplication().getSystemService(Context.CONNECTIVITY_SERVICE);
+		ConnectivityManager connectivity = (ConnectivityManager) AbsApplication.getInstance().getSystemService(Context.CONNECTIVITY_SERVICE);
 		if (connectivity == null) {
 			// Log.i("NetWorkState", "Unavailabel");
 			return false;
@@ -184,7 +184,7 @@ public final class HttpManger {
 	}
 
 	public static boolean isNetworkOnWifi() {
-		ConnectivityManager connectivity = (ConnectivityManager) AbsApplication.getSuperApplication().getSystemService(Context.CONNECTIVITY_SERVICE);
+		ConnectivityManager connectivity = (ConnectivityManager) AbsApplication.getInstance().getSystemService(Context.CONNECTIVITY_SERVICE);
 		if (connectivity != null) {
 			NetworkInfo[] info = connectivity.getAllNetworkInfo();
 			if (info != null) {
@@ -298,7 +298,7 @@ public final class HttpManger {
 			addHeaders(headers, request);
 		}
 
-		ConnectivityManager connectivityManager = (ConnectivityManager) AbsApplication.getSuperApplication().getSystemService(Context.CONNECTIVITY_SERVICE);
+		ConnectivityManager connectivityManager = (ConnectivityManager) AbsApplication.getInstance().getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo activeNetInfo = connectivityManager.getActiveNetworkInfo();
 
 		HttpResponse response = null;

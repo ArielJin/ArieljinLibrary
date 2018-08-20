@@ -7,7 +7,7 @@ import com.arieljin.library.abs.AbsApplication;
 public final class DipUtil {
 
 	public static float getDip() {
-		return AbsApplication.getSuperApplication().getResources().getDisplayMetrics().density;
+		return AbsApplication.getInstance().getResources().getDisplayMetrics().density;
 	}
 
 	public static int getIntDip(float i) {
@@ -15,15 +15,15 @@ public final class DipUtil {
 	}
 
 	public static float getFloatDip(float i) {
-		return AbsApplication.getSuperApplication().getResources().getDisplayMetrics().density * i;
+		return AbsApplication.getInstance().getResources().getDisplayMetrics().density * i;
 	}
 
 	public static int getScreenWidth() {
-		return AbsApplication.getSuperApplication().getResources().getDisplayMetrics().widthPixels;
+		return AbsApplication.getInstance().getResources().getDisplayMetrics().widthPixels;
 	}
 
 	public static int getScreenHeight() {
-		return AbsApplication.getSuperApplication().getResources().getDisplayMetrics().heightPixels;
+		return AbsApplication.getInstance().getResources().getDisplayMetrics().heightPixels;
 	}
 
 	public static int dip2px(Context context, float dpValue) {

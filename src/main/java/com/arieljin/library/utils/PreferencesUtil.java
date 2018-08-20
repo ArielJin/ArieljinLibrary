@@ -15,7 +15,7 @@ public final class PreferencesUtil {
 
     public static SharedPreferences getPreferences() {
         if (preferences == null) {
-            preferences = PreferenceManager.getDefaultSharedPreferences(AbsApplication.getSuperApplication());
+            preferences = PreferenceManager.getDefaultSharedPreferences(AbsApplication.getInstance());
         }
         return preferences;
     }

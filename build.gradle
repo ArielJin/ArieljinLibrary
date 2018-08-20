@@ -45,7 +45,7 @@ dependencies {
     implementation 'com.android.support.constraint:constraint-layout:1.1.2'
     implementation 'org.apache.httpcomponents:httpmime:4.3.6'
     //不会抛java.lang.NoSuchFieldError: No static field INSTANCE of type异常
-    implementation 'org.apache.httpcomponents:httpcore:4.4.5'
+    api 'org.apache.httpcomponents:httpcore:4.4.5'
     //不会抛java.lang.NoSuchFieldError: No static field INSTANCE of type异常
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'

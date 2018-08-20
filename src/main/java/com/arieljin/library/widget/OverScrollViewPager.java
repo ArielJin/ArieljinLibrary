@@ -9,6 +9,7 @@ import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ViewTreeObserver;
+import android.widget.EdgeEffect;
 
 import com.arieljin.library.utils.DipUtil;
 import com.arieljin.library.widget.adapter.AbsPagerAdapter;
@@ -35,12 +36,14 @@ public final class OverScrollViewPager extends ViewPager implements GestureDetec
     private OnPagerItemClickListener onItemClickListener;
     private OnPagerOverScrollListener onPagerOverScrollListener;
 
-    private EdgeEffectCompat leftEdge, rightEdge;
+    private EdgeEffect leftEdge, rightEdge;
 
     private OnPageChangeListener onPageChangeListener;
     private PageTransformer pageTransformer;
 
     private int scroll_state, last_position;
+
+    private boolean isCanScrollLeftEdge = true;
 
     public OverScrollViewPager(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -67,8 +70,8 @@ public final class OverScrollViewPager extends ViewPager implements GestureDetec
             if (leftEdgeField != null && rightEdgeField != null) {
                 leftEdgeField.setAccessible(true);
                 rightEdgeField.setAccessible(true);
-                leftEdge = (EdgeEffectCompat) leftEdgeField.get(this);
-                rightEdge = (EdgeEffectCompat) rightEdgeField.get(this);
+                leftEdge = (EdgeEffect) leftEdgeField.get(this);
+                rightEdge = (EdgeEffect) rightEdgeField.get(this);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -175,7 +178,7 @@ public final class OverScrollViewPager extends ViewPager implements GestureDetec
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (gestureDetector.onTouchEvent(event)) {
+        if ((isCanScrollLeftEdge || !isAtLeft()) && gestureDetector.onTouchEvent(event)) {
             scrollTo((int) scrollX, 0);
 
             int positionOffsetPixels = getScrollX() - currentViewLeft;
@@ -256,6 +259,10 @@ public final class OverScrollViewPager extends ViewPager implements GestureDetec
     public boolean isFling() {
         int offset = getScrollX() % width;
         return offset > 3 && offset < width - 3;
+    }
+
+    public void setCanScrollLeftEdge(boolean canScrollLeftEdge) {
+        isCanScrollLeftEdge = canScrollLeftEdge;
     }
 
     public void setOnPagerItemClickListener(OnPagerItemClickListener onItemClickListener) {

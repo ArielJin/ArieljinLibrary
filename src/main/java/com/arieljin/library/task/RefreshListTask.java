@@ -18,7 +18,7 @@ import java.util.HashMap;
 public abstract class RefreshListTask<T extends Serializable> extends RefreshBaseTask<ArrayList<T>> implements OnTaskCompleteListener<ArrayList<T>> {
 
     @Override
-    protected ArrayList<T> praseJson(JSONObject json) throws Throwable {
+    protected ArrayList<T> parseJson(JSONObject json) throws Throwable {
         return null;
     }
 
@@ -36,10 +36,6 @@ public abstract class RefreshListTask<T extends Serializable> extends RefreshBas
         super(context, request, needToast, completeListener);
     }
 
-    @Override
-    protected String getRequesturl() {
-        return null;
-    }
 
     @Override
     protected HashMap<String, String> addHeaders() {

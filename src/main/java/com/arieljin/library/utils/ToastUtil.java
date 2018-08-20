@@ -67,10 +67,10 @@ public final class ToastUtil {
 
 	private synchronized static void makeToast(final CharSequence text, final int type) {
 			if (type == TOAST_TYPE_MESSAGE) {
-				v = View.inflate(AbsApplication.getSuperApplication(), R.layout.toast_message,
+				v = View.inflate(AbsApplication.getInstance(), R.layout.toast_message,
 						null);
 			} else if (type == TOAST_TYPE_OK || type == TOAST_TYPE_ERROR) {
-				v = View.inflate(AbsApplication.getSuperApplication(), R.layout.toast,
+				v = View.inflate(AbsApplication.getInstance(), R.layout.toast,
 						null);
 			}
 			if (v != null) {
@@ -81,7 +81,7 @@ public final class ToastUtil {
 					t.cancel();
 				}
 
-				t = Toast.makeText(AbsApplication.getSuperApplication(), "",
+				t = Toast.makeText(AbsApplication.getInstance(), "",
 						Toast.LENGTH_LONG);
 				t.setGravity(Gravity.CENTER, 0, 0);
 				t.setView(v);
