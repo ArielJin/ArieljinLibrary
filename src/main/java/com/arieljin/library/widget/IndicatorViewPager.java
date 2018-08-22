@@ -3,12 +3,14 @@ package com.arieljin.library.widget;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.StateListDrawable;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Message;
 import android.support.constraint.ConstraintLayout;
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.ViewGroup;
@@ -16,6 +18,7 @@ import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
+import com.arieljin.library.R;
 import com.arieljin.library.utils.DipUtil;
 import com.arieljin.library.widget.adapter.BasePagerAdapter;
 
@@ -29,26 +32,88 @@ public class IndicatorViewPager extends ConstraintLayout implements ViewPager.On
 
     private ViewPager viewPager;
     private RadioGroup indicatorGroup;
+    private boolean isLoop = false;
 
+    private static boolean autoPlay = false;
+
+    private static long time = 0;
+
+    @SuppressLint("HandlerLeak")
+    private Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            play();
+
+        }
+    };
+
+    private Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+            viewPager.setCurrentItem(viewPager.getCurrentItem() + 1);
+        }
+    };
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        play();
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        cancel();
+    }
+
+    public void play() {
+
+        if (autoPlay) {
+            handler.postDelayed(runnable, time);
+        } else {
+            handler.removeCallbacks(runnable);
+        }
+
+
+    }
+
+    public void cancel() {
+        handler.removeCallbacks(runnable);
+    }
+
+    public void setAutoPlay(int seconds) {
+        IndicatorViewPager.time = seconds;
+        IndicatorViewPager.autoPlay = IndicatorViewPager.time > 0;
+        if (!autoPlay) {
+            handler.removeCallbacks(runnable);
+        }
+    }
 
     public IndicatorViewPager(Context context) {
-        super(context);
-        init();
+        this(context, null);
     }
 
     public IndicatorViewPager(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        init();
+        this(context, attrs, 0);
     }
 
     public IndicatorViewPager(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+
+        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.Ariel_IndicatorViewPager, defStyleAttr, 0);
+        if (a.hasValue(R.styleable.Ariel_IndicatorViewPager_is_loop))
+            isLoop = a.getBoolean(R.styleable.Ariel_IndicatorViewPager_is_loop, false);
+        if (a.hasValue(R.styleable.Ariel_IndicatorViewPager_play_time_seconds)) {
+            time = a.getInteger(R.styleable.Ariel_IndicatorViewPager_play_time_seconds, 0) * 1000;
+            autoPlay = time > 0;
+
+        }
         init();
     }
 
     private void init() {
 
-        viewPager = new ViewPager(getContext());
+        viewPager = isLoop ? new LoopViewPager(getContext()) : new ViewPager(getContext());
         LayoutParams viewPagerLP = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         viewPager.setLayoutParams(viewPagerLP);
 
@@ -97,8 +162,8 @@ public class IndicatorViewPager extends ConstraintLayout implements ViewPager.On
             }
         });
 
-
     }
+
 
     private interface OnPagerItemCountChangeListener {
         void onPagerItemCountChanged();
@@ -133,7 +198,9 @@ public class IndicatorViewPager extends ConstraintLayout implements ViewPager.On
 
         } else {
 
-            viewPager.setAdapter(null);
+            if (onPagerItemCountChangeListener != null) {
+                onPagerItemCountChangeListener.onPagerItemCountChanged();
+            }
             indicatorGroup.removeAllViews();
             setVisibility(GONE);
 
@@ -156,6 +223,13 @@ public class IndicatorViewPager extends ConstraintLayout implements ViewPager.On
 
     @Override
     public void onPageScrollStateChanged(int state) {
+
+        if (state == ViewPager.SCROLL_STATE_IDLE) {
+            viewPager.setCurrentItem(viewPager.getCurrentItem(), false);
+            play();
+        } else if (state == ViewPager.SCROLL_STATE_DRAGGING) {
+            cancel();
+        }
 
     }
 

@@ -1,12 +1,14 @@
 package com.arieljin.library.listener;
 
 public interface OnTaskCompleteListener<T> {
-	public void onTaskComplete(T result);
+	void onTaskComplete(T result);
 
-	public void onTaskLoadMoreComplete(T result);
+//	void onTaskComplete();
 
-	public void onTaskFailed(String error);
+	void onTaskLoadMoreComplete(T result);
 
-	public void onTaskCancel();
+	void onTaskFailed(String error);
+
+	void onTaskCancel();
 
 }

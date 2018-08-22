@@ -14,9 +14,9 @@ import java.util.Set;
 public class BasePagerAdapter<T> extends AbsPagerAdapter {
 
 
-    private List<T> list;
+    protected List<T> list;
     private Set<View> views = new HashSet<>();
-    private AdapterRender<T> render;
+    protected AdapterRender<T> render;
 
 
     public void setList(List<T> list) {

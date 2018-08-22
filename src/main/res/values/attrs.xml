@@ -54,5 +54,10 @@
         <attr name="contentViewId" format="reference"/>
     </declare-styleable>
 
+    <declare-styleable name="Ariel_IndicatorViewPager">
+        <attr name="is_loop" format="boolean"/>
+        <attr name="play_time_seconds" format="integer"/>
+    </declare-styleable>
+
 
 </resources>

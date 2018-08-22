@@ -5,7 +5,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
-import android.os.Looper;
 import android.os.Process;
 import android.text.TextUtils;
 import android.util.Log;
@@ -21,7 +20,6 @@ import com.arieljin.library.manager.HttpManger;
 import com.arieljin.library.manager.ThreadPoolManager;
 import com.arieljin.library.task.RefreshBaseTask;
 import com.arieljin.library.utils.DipUtil;
-import com.arieljin.library.utils.MainHandlerUtil;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
@@ -47,24 +45,24 @@ import java.util.concurrent.ExecutionException;
 public abstract class AbsTask<T extends Serializable> implements Runnable {
     public AbsRequest request;
     protected MyThread<T> thread;
-    public volatile Set<OnTaskCompleteListener<T>> onTaskPostCompleteListeners, onTaskCompleteListeners;
+    private volatile Set<OnTaskCompleteListener<T>> /*onTaskPostCompleteListeners, */onTaskCompleteListeners;
     protected WeakReference<Context> weakReference;
 //    protected ObjectMapper mObjectMapper = null;
 
-    public int progressY;
-    public int circleProgressY = 200;
+    private int progressY;
+//    public int circleProgressY = 200;
 
-    protected Dialog dialog;
-    protected ProgressBar progressBar;
+    private Dialog dialog;
+    private ProgressBar progressBar;
 
 //    protected Dialog circleDialog;
 //    protected CircleProgressBar circleProgressBar;
 
     public boolean needUploadFile, cancelable = true, needLast, needOnlyLast, needToast, /*needCircle = true, */
             needRestart, isSending, needLastOnce;
-    protected int delay = 1, progress;
+    private int delay = 1, progress;
     public int method_type = HttpManger.POST;
-    public String loadingText = "加载中";
+//    public String loadingText = "加载中";
 //    public ShowDialogMothod showDialogMothod = ShowDialogMothod.CIRCLE_DIALOG;
 
 //    private enum ShowDialogMothod{
@@ -78,13 +76,12 @@ public abstract class AbsTask<T extends Serializable> implements Runnable {
     protected abstract T parseJson(JSONObject json) throws Throwable;
 
     public AbsTask(Context context, AbsRequest request) {
-        this(context, request, (OnTaskCompleteListener) null);
+        this(context, request, null);
     }
 
     public AbsTask(Context context, AbsRequest request, OnTaskCompleteListener<T> completeListener) {
         super();
-        this.weakReference = new WeakReference<Context>(context);
-//        this.mObjectMapper = new ObjectMapper();
+        this.weakReference = new WeakReference<>(context);
         this.request = request;
         this.headers = addHeaders();
         addListener(completeListener);
@@ -93,7 +90,7 @@ public abstract class AbsTask<T extends Serializable> implements Runnable {
 
     public AbsTask(Context context, AbsRequest request, boolean needToast, /*boolean needCircle, */OnTaskCompleteListener<T> completeListener) {
         super();
-        this.weakReference = new WeakReference<Context>(context);
+        this.weakReference = new WeakReference<>(context);
 //        this.mObjectMapper = new ObjectMapper();
         this.request = request;
         this.headers = addHeaders();
@@ -105,39 +102,21 @@ public abstract class AbsTask<T extends Serializable> implements Runnable {
 
     public void addListener(OnTaskCompleteListener<T> completeListener) {
         if (completeListener != null) {
-            if (onTaskPostCompleteListeners == null) {
-                onTaskPostCompleteListeners = new HashSet<OnTaskCompleteListener<T>>();
-            }
-            onTaskPostCompleteListeners.add(completeListener);
-        }
-    }
-
-    public void addListenerWithOutPost(OnTaskCompleteListener<T> completeListener) {
-        if (completeListener != null) {
             if (onTaskCompleteListeners == null) {
-                onTaskCompleteListeners = new HashSet<OnTaskCompleteListener<T>>();
+                onTaskCompleteListeners = new HashSet<>();
             }
             onTaskCompleteListeners.add(completeListener);
         }
     }
 
+
     public void setContext(Context context) {
-        this.weakReference = new WeakReference<Context>(context);
+        this.weakReference = new WeakReference<>(context);
     }
 
     protected void init() {
-//        if(needCircle && !needToast){
-//            showDialogMothod = ShowDialogMothod.CIRCLE_DIALOG;
-//        }else if(!needCircle && needToast){
-//            showDialogMothod = ShowDialogMothod.TOAST_DIALOG;
-//        }else if(needToast && needCircle){
-//            showDialogMothod = ShowDialogMothod.ALL_DIALOG;
-//        }else if(!needCircle && !needToast){
-//            showDialogMothod = ShowDialogMothod.NULL_DIALOG;
-//        }
-    }
 
-//    protected abstract String getRequesturl();
+    }
 
     protected abstract T parseCompleteJson(JSONObject jsonObject);
 
@@ -148,9 +127,11 @@ public abstract class AbsTask<T extends Serializable> implements Runnable {
             try {
                 json = doMainInBackground();
 
-                if (json != null && json.length() > 0)
+                if (json != null && json.length() > 0) {
 
                     return parseCompleteJson(json);
+                }
+
 
             } catch (Throwable throwable) {
                 throwable.printStackTrace();
@@ -182,11 +163,6 @@ public abstract class AbsTask<T extends Serializable> implements Runnable {
     protected JSONObject doMainInBackground() throws Throwable {
 
         String url = getApiMethodName();
-//        if (!getApiMethodName().startsWith("http")) {
-//            url = getRequesturl() + getApiMethodName();
-//        } else {
-//            url = getApiMethodName();
-//        }
 
         Log.i("ArielJin", url);
 
@@ -225,14 +201,6 @@ public abstract class AbsTask<T extends Serializable> implements Runnable {
             Context context = weakReference.get();
 
             dialog = new Dialog(context, R.style.transparent_dialog);
-//			dialog = new Dialog(context, R.style.contentOverlay);
-
-//			 ViewGroup view = (ViewGroup)
-//			 LayoutInflater.from(weakReference.get()).inflate(R.layout.progress,
-//			 null);
-//			 TextView textView = (TextView)
-//			 view.findViewById(android.R.id.text1);
-//			 textView.setText(loadingText);
 
             progressBar = new ProgressBar(context, null, android.R.attr.progressBarStyleHorizontal);
             progressBar.setProgressDrawable(context.getResources().getDrawable(R.drawable.progressbar_task));
@@ -263,41 +231,6 @@ public abstract class AbsTask<T extends Serializable> implements Runnable {
         }
     }
 
-//    protected void initCircleDialog(){
-//        Context context = weakReference.get();
-//        if(circleDialog == null && context != null){
-//
-//            circleDialog = new Dialog(context, R.style.transparent_dialog);
-//
-//            ViewGroup viewGroup = (ViewGroup)LayoutInflater.from(context).inflate(R.layout.circle_progressbar,null);
-//            circleProgressBar = (CircleProgressBar)viewGroup.findViewById(R.id.circleProgressBar);
-////            circleProgressBar = new CircleProgressBar(context);
-////            progressBar.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-//            circleProgressBar.setClickable(false);
-//
-//            circleDialog.setContentView(viewGroup);
-//            circleDialog.setCanceledOnTouchOutside(false);
-//            circleDialog.setCancelable(cancelable);
-//            if (cancelable) {
-//                circleDialog.setOnCancelListener(new OnCancelListener() {
-//
-//                    @Override
-//                    public void onCancel(DialogInterface dialog) {
-//                        thread.cancel(true);
-//                    }
-//                });
-//            }
-//
-//            Window dialogWindow = circleDialog.getWindow();
-//            WindowManager.LayoutParams lp = dialogWindow.getAttributes();
-//            lp.gravity = Gravity.TOP|Gravity.CENTER_HORIZONTAL;
-//            lp.y = circleProgressY;
-//            lp.width = LayoutParams.WRAP_CONTENT;
-//            lp.height = LayoutParams.WRAP_CONTENT;
-//            dialogWindow.setAttributes(lp);
-//
-//        }
-//    }
 
     public T get() {
         if (thread != null) {
@@ -363,13 +296,13 @@ public abstract class AbsTask<T extends Serializable> implements Runnable {
 //                            ToastUtil.showErrorToast("网络异常");
 //                        }
 
-                        if (onTaskPostCompleteListeners != null) {
+                        if (onTaskCompleteListeners != null) {
                             if (context instanceof Activity && !((Activity) context).isFinishing()) {
                                 ((Activity) context).runOnUiThread(new Runnable() {
 
                                     @Override
                                     public void run() {
-                                        for (OnTaskCompleteListener<T> onTaskCompleteListener : onTaskPostCompleteListeners) {
+                                        for (OnTaskCompleteListener<T> onTaskCompleteListener : onTaskCompleteListeners) {
 //                                            onTaskCompleteListener.onTaskFailed("网络异常");
                                             if (!isLoadMore && needLastOnce) {
                                                 T result = loadLast();
@@ -394,18 +327,8 @@ public abstract class AbsTask<T extends Serializable> implements Runnable {
                     }
 
                     if ((needToast ||/*needCircle*/ isRefreshBaseTask()) && !thread.isRestart && !isLoadMore) {
-                        if (context instanceof Activity) {
-                            if (!((Activity) context).isFinishing()) {
-                                ((Activity) context).runOnUiThread(new Runnable() {
-
-                                    @Override
-                                    public void run() {
-                                        showDialog();
-                                    }
-                                });
-                            }
-                        } else {
-                            MainHandlerUtil.post(new Runnable() {
+                        if (context instanceof Activity && !((Activity) context).isFinishing()) {
+                            ((Activity) context).runOnUiThread(new Runnable() {
 
                                 @Override
                                 public void run() {
@@ -413,6 +336,15 @@ public abstract class AbsTask<T extends Serializable> implements Runnable {
                                 }
                             });
                         }
+//                        else {
+//                            MainHandlerUtil.post(new Runnable() {
+//
+//                                @Override
+//                                public void run() {
+//                                    showDialog();
+//                                }
+//                            });
+//                        }
                     }
 
                     ThreadPoolManager.httpExecute(thread);
@@ -421,27 +353,7 @@ public abstract class AbsTask<T extends Serializable> implements Runnable {
         }.start();
     }
 
-//    protected void showDialog(ShowDialogMothod showDialogMothod) {
-//        switch (showDialogMothod){
-//            case CIRCLE_DIALOG:
-//                initCircleDialog();
-//                showDialog(circleDialog);
-//                break;
-//            case TOAST_DIALOG:
-//                initDialog();
-//                showDialog(dialog);
-//                break;
-//            case ALL_DIALOG:
-//                initCircleDialog();
-//                initDialog();
-//                showDialog(circleDialog);
-//                showDialog(dialog);
-//                break;
-//            default:break;
-//        }
-//    }
-
-    protected void showDialog() {
+    private void showDialog() {
         initTaskDialog();
         if (isShowToastDialog() || /*isShowCircleDialog()*/ isRefreshBaseTask()) {
             Context context = weakReference.get();
@@ -449,6 +361,8 @@ public abstract class AbsTask<T extends Serializable> implements Runnable {
                 try {
                     if (isShowToastDialog()) {
                         dialog.show();
+                        progressBar.setProgress(progress = 0);
+                        setProgress();
                     }
                     if (isRefreshBaseTask()) {
 //                        circleDialog.show();
@@ -456,57 +370,37 @@ public abstract class AbsTask<T extends Serializable> implements Runnable {
 
                     }
                 } catch (Throwable e) {
+
                 }
-                if (isShowToastDialog()) {
-                    progressBar.setProgress(progress = 0);
-                    setProgress();
-                }
+
             }
         }
     }
 
-    protected boolean isDismissToastDialog() {
+    private boolean isDismissToastDialog() {
         if (needToast && dialog != null && dialog.isShowing()) {
             return true;
         }
         return false;
     }
 
-//    protected boolean isDismissCircleDialog(){
-////        if(needCircle && circleDialog != null && circleDialog.isShowing()){
-////            return true;
-////        }
-//        return false;
-//    }
 
-    protected boolean isShowToastDialog() {
+    private boolean isShowToastDialog() {
         if (needToast && dialog != null && !dialog.isShowing()) {
             return true;
         }
         return false;
     }
 
-//    protected boolean isShowCircleDialog(){
-////        if(needCircle && circleDialog != null && !circleDialog.isShowing()){
-////            return true;
-////        }
-//        return false;
-//    }
 
-//    protected boolean isRefreshBaseActivity() {
-//        return weakReference != null && weakReference.get() != null && weakReference.get() instanceof RefreshBaseActivity;
-//    }
-
-    protected void initTaskDialog() {
+    private void initTaskDialog() {
         if (needToast && dialog == null) {
             initDialog();
         }
-//        if(needCircle && circleDialog == null){
-//            initCircleDialog();
-//        }
+
     }
 
-    protected void setProgress() {
+    private void setProgress() {
         new Thread() {
 
             @Override
@@ -548,7 +442,7 @@ public abstract class AbsTask<T extends Serializable> implements Runnable {
         return null;
     }
 
-    protected JSONObject loadLastJson() throws JSONException {
+    private JSONObject loadLastJson() throws JSONException {
         if (weakReference.get() != null) {
             String s = loadLastString();
             if (!TextUtils.isEmpty(s)) {
@@ -559,7 +453,7 @@ public abstract class AbsTask<T extends Serializable> implements Runnable {
         return null;
     }
 
-    protected String loadLastString() {
+    private String loadLastString() {
         FileInputStream fis = null;
         try {
             fis = weakReference.get().openFileInput(getClass().getSimpleName() + getLastTag());
@@ -618,185 +512,232 @@ public abstract class AbsTask<T extends Serializable> implements Runnable {
         }
     }
 
-    protected static boolean isRunOnMainThread() {
-        return Looper.myLooper() == Looper.getMainLooper();
-    }
+//    private static boolean isRunOnMainThread() {
+//        return Looper.myLooper() == Looper.getMainLooper();
+//    }
 
-    protected void completed(final T result, final boolean isLoadMore, boolean isLast) {
-        if (!isLast) {
-            isSending = false;
-        }
+    protected void completed(final T result, final boolean isLoadMore, final boolean isLast) {
+
 
         delay = 1;
 
-        if (onTaskCompleteListeners != null) {
-            for (OnTaskCompleteListener<T> onTaskCompleteListener : onTaskCompleteListeners) {
-                if (isLoadMore) {
-                    onTaskCompleteListener.onTaskLoadMoreComplete(result);
-                } else {
-                    onTaskCompleteListener.onTaskComplete(result);
-                }
+        if (thread.isCancelled) {
+            if (!isLast) {
+                isSending = false;
             }
+            return;
         }
 
-        if (!thread.isCancelled) {
-            Context context = weakReference.get();
-            if (context != null) {
-                if (context instanceof Activity) {
-                    Activity activity = (Activity) context;
-                    if (!activity.isFinishing()) {
-                        if (isRunOnMainThread()) {
-                            handleComplete(result, isLoadMore);
-                        } else {
-                            activity.runOnUiThread(new Runnable() {
 
-                                @Override
-                                public void run() {
-                                    Activity activity = (Activity) weakReference.get();
-                                    if (activity != null && !activity.isFinishing()) {
-                                        handleComplete(result, isLoadMore);
-                                    }
-                                }
-                            });
+        if (weakReference.get() != null && weakReference.get() instanceof Activity) {
+
+
+            if (!((Activity) weakReference.get()).isFinishing())
+                ((Activity) weakReference.get()).runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (isDismissToastDialog()) {
+                            if (progressBar != null)
+                                progressBar.setProgress(progress = 100);
+                            dialog.dismiss();
                         }
-                    }
-                } else {
-                    handleComplete(result, isLoadMore);
-                }
-            }
-        }
-    }
 
-    protected void handleComplete(final T result, boolean isLoadMore) {
-        if (isDismissToastDialog() || isRefreshBaseTask()) {
-            if (isDismissToastDialog() && progressBar != null) {
-                if (isRunOnMainThread())
-                    progressBar.setProgress(progress = 100);
-            }
-            new Thread() {
+                        if (isRefreshBaseTask()) {
+                            ((RefreshBaseTask<T>) AbsTask.this).onTaskComplete();
+                        }
 
-                @Override
-                public void run() {
-                    try {
-                        sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+                        if (!isLast) {
+                            isSending = false;
+                        }
 
-                    final Activity activity = (Activity) weakReference.get();
-                    if (activity != null && !activity.isFinishing()) {
-                        activity.runOnUiThread(new Runnable() {
-
-                            @Override
-                            public void run() {
-                                try {
-                                    if (isDismissToastDialog()) {
-                                        dialog.dismiss();
-                                    }
-                                    if (isRefreshBaseTask()) {
-//                                        circleDialog.dismiss();
-                                        ((RefreshBaseTask<T>) AbsTask.this).onTaskComplete();
-                                    }
-                                } catch (Exception e) {
+                        if (onTaskCompleteListeners != null) {
+                            for (OnTaskCompleteListener<T> onTaskCompleteListener : onTaskCompleteListeners) {
+                                if (isLoadMore) {
+                                    onTaskCompleteListener.onTaskLoadMoreComplete(result);
+                                } else {
+                                    if (result != null)
+                                        onTaskCompleteListener.onTaskComplete(result);
+//                    else
+//                        onTaskCompleteListener.onTaskComplete();
                                 }
                             }
-                        });
-                    }
-                }
-            }.start();
-        }
+                        }
 
-        if (result != null && onTaskPostCompleteListeners != null) {
-            for (OnTaskCompleteListener<T> onTaskCompleteListener : onTaskPostCompleteListeners) {
-                if (isLoadMore) {
-                    onTaskCompleteListener.onTaskLoadMoreComplete(result);
-                } else {
-                    onTaskCompleteListener.onTaskComplete(result);
+
+                    }
+                });
+            else if (!isLast) {
+                isSending = false;
+            }
+
+
+        } else {
+            if (!isLast) {
+                isSending = false;
+            }
+
+            if (onTaskCompleteListeners != null) {
+                for (OnTaskCompleteListener<T> onTaskCompleteListener : onTaskCompleteListeners) {
+                    if (isLoadMore) {
+                        onTaskCompleteListener.onTaskLoadMoreComplete(result);
+                    } else {
+                        if (result != null)
+                            onTaskCompleteListener.onTaskComplete(result);
+//                    else
+//                        onTaskCompleteListener.onTaskComplete();
+                    }
                 }
             }
         }
+
+
     }
 
-    protected void failed(String error) {
-        isSending = false;
+//    protected void handleComplete(final T result, boolean isLoadMore) {
+//        if (isDismissToastDialog() || isRefreshBaseTask()) {
+//            if (isDismissToastDialog() && progressBar != null) {
+//                if (isRunOnMainThread())
+//                    progressBar.setProgress(progress = 100);
+//            }
+//            new Thread() {
+//
+//                @Override
+//                public void run() {
+//                    try {
+//                        sleep(1000);
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
+//
+//                    final Activity activity = (Activity) weakReference.get();
+//                    if (activity != null && !activity.isFinishing()) {
+//                        activity.runOnUiThread(new Runnable() {
+//
+//                            @Override
+//                            public void run() {
+//                                try {
+//                                    if (isDismissToastDialog()) {
+//                                        dialog.dismiss();
+//                                    }
+//                                    if (isRefreshBaseTask()) {
+////                                        circleDialog.dismiss();
+//                                        ((RefreshBaseTask<T>) AbsTask.this).onTaskComplete();
+//                                    }
+//                                } catch (Exception e) {
+//                                }
+//                            }
+//                        });
+//                    }
+//                }
+//            }.start();
+//        }
+//
+//        if (onTaskPostCompleteListeners != null) {
+//            for (OnTaskCompleteListener<T> onTaskCompleteListener : onTaskPostCompleteListeners) {
+//                if (isLoadMore) {
+//                    onTaskCompleteListener.onTaskLoadMoreComplete(result);
+//                } else {
+//                    if (result != null)
+//                        onTaskCompleteListener.onTaskComplete(result);
+////                    else
+////                        onTaskCompleteListener.onTaskComplete();
+//                }
+//            }
+//        }
+//    }
 
-        if (error == null || error.isEmpty()) {
+    protected void failed(String error) {
+//        isSending = false;
+
+        if (!(error != null && !TextUtils.isEmpty(error))) {
             error = "数据异常";
         }
 
         if (!thread.isCancelled) {
-            if (onTaskCompleteListeners != null) {
-                for (OnTaskCompleteListener<T> onTaskCompleteListener : onTaskCompleteListeners) {
-                    onTaskCompleteListener.onTaskFailed(error);
-                }
-            }
 
-            Context context = weakReference.get();
-            if (context != null) {
-                if (context instanceof Activity) {
-                    Activity activity = (Activity) context;
-                    if (!activity.isFinishing()) {
-                        if (isRunOnMainThread()) {
-                            handleFail(error);
-                        } else {
-                            final String temp = error;
 
-                            activity.runOnUiThread(new Runnable() {
+            if (weakReference.get() != null && weakReference.get() instanceof Activity) {
 
-                                @Override
-                                public void run() {
-                                    Activity activity = (Activity) weakReference.get();
-                                    if (activity != null && !activity.isFinishing()) {
-                                        handleFail(temp);
-                                    }
+                if (!((Activity) weakReference.get()).isFinishing()) {
+                    final String finalError = error;
+                    ((Activity) weakReference.get()).runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            if (isDismissToastDialog())
+                                dialog.dismiss();
+                            if (isRefreshBaseTask() && ((RefreshBaseTask<T>) AbsTask.this).onTaskSending()) {
+
+                                ((RefreshBaseTask<T>) AbsTask.this).onTaskFailed();
+
+
+                            }
+                            isSending = false;
+
+                            if (onTaskCompleteListeners != null) {
+                                for (OnTaskCompleteListener<T> onTaskCompleteListener : onTaskCompleteListeners) {
+                                    onTaskCompleteListener.onTaskFailed(finalError);
                                 }
-                            });
+                            }
+
                         }
-                    }
+                    });
                 } else {
-//					handleFail(error);
+                    isSending = false;
                 }
-            }
-        }
-    }
 
-    protected void handleFail(String error) {
-        if (needToast/*||needCircle*/) {
-            if (isDismissToastDialog()) {
-                try {
-                    if (isDismissToastDialog()) {
-                        dialog.dismiss();
+            } else {
+                isSending = false;
+                if (onTaskCompleteListeners != null) {
+                    for (OnTaskCompleteListener<T> onTaskCompleteListener : onTaskCompleteListeners) {
+                        onTaskCompleteListener.onTaskFailed(error);
                     }
-
-                } catch (Exception e) {
                 }
             }
 
-//			ToastUtil.showErrorToast(error);
-        }
 
-        if (isRefreshBaseTask()) {
-
-            try {
-
-                if (((RefreshBaseTask<T>) this).onTaskSending()) {
-//                        circleDialog.dismiss();
-                    ((RefreshBaseTask<T>) this).onTaskFailed();
-                }
-
-            } catch (Exception e) {
-
-            }
-
-
-        }
-
-        if (onTaskPostCompleteListeners != null) {
-            for (OnTaskCompleteListener<T> onTaskCompleteListener : onTaskPostCompleteListeners) {
-                onTaskCompleteListener.onTaskFailed(error);
-            }
+        } else {
+            isSending = false;
         }
     }
+
+//    protected void handleFail(String error) {
+//        if (needToast/*||needCircle*/) {
+//            if (isDismissToastDialog()) {
+//                try {
+//                    if (isDismissToastDialog()) {
+//                        dialog.dismiss();
+//                    }
+//
+//                } catch (Exception e) {
+//                }
+//            }
+//
+////			ToastUtil.showErrorToast(error);
+//        }
+//
+//        if (isRefreshBaseTask()) {
+//
+//            try {
+//
+//                if (((RefreshBaseTask<T>) this).onTaskSending()) {
+////                        circleDialog.dismiss();
+//                    ((RefreshBaseTask<T>) this).onTaskFailed();
+//                }
+//
+//            } catch (Exception e) {
+//
+//            }
+//
+//
+//        }
+//
+//        if (onTaskPostCompleteListeners != null) {
+//            for (OnTaskCompleteListener<T> onTaskCompleteListener : onTaskPostCompleteListeners) {
+//                onTaskCompleteListener.onTaskFailed(error);
+//            }
+//        }
+//    }
 
     public void onCancel() {
         if (onTaskCompleteListeners != null) {
@@ -805,46 +746,46 @@ public abstract class AbsTask<T extends Serializable> implements Runnable {
             }
         }
 
-        Context context = weakReference.get();
-        if (context != null) {
-            if (context instanceof Activity) {
-                Activity activity = (Activity) context;
-                if (!activity.isFinishing()) {
-                    if (isRunOnMainThread()) {
-                        handleCancel();
-                    } else {
-                        activity.runOnUiThread(new Runnable() {
-
-                            @Override
-                            public void run() {
-                                Activity activity = (Activity) weakReference.get();
-                                if (activity != null && !activity.isFinishing()) {
-                                    handleCancel();
-                                }
-                            }
-                        });
-                    }
-                }
-            } else {
-                handleCancel();
-            }
-        }
+//        Context context = weakReference.get();
+//        if (context != null) {
+//            if (context instanceof Activity) {
+//                Activity activity = (Activity) context;
+//                if (!activity.isFinishing()) {
+//                    if (isRunOnMainThread()) {
+//                        handleCancel();
+//                    } else {
+//                        activity.runOnUiThread(new Runnable() {
+//
+//                            @Override
+//                            public void run() {
+//                                Activity activity = (Activity) weakReference.get();
+//                                if (activity != null && !activity.isFinishing()) {
+//                                    handleCancel();
+//                                }
+//                            }
+//                        });
+//                    }
+//                }
+//            } else {
+//                handleCancel();
+//            }
+//        }
     }
 
-    public void handleCancel() {
-        if (onTaskPostCompleteListeners != null) {
-            for (OnTaskCompleteListener<T> onTaskCompleteListener : onTaskPostCompleteListeners) {
-                onTaskCompleteListener.onTaskCancel();
-            }
-        }
-    }
+//    public void handleCancel() {
+//        if (onTaskPostCompleteListeners != null) {
+//            for (OnTaskCompleteListener<T> onTaskCompleteListener : onTaskPostCompleteListeners) {
+//                onTaskCompleteListener.onTaskCancel();
+//            }
+//        }
+//    }
 
     protected void error(final String error) {
-        isSending = false;
 
         if (!thread.isCancelled) {
             if (needRestart) {
-                if (delay < 60 && !thread.isCancelled) {
+                if (delay < 60) {
+                    isSending = false;
                     new Thread() {
 
                         @Override
@@ -868,6 +809,8 @@ public abstract class AbsTask<T extends Serializable> implements Runnable {
             } else {
                 failed(error);
             }
+        } else {
+            isSending = false;
         }
     }
 
@@ -909,14 +852,13 @@ public abstract class AbsTask<T extends Serializable> implements Runnable {
                     task.request.finish();
                 }
                 task.error(e.getMessage());
-                return;
             } finally {
                 absTask.clear();
             }
         }
 
         @Override
-        public T call() throws Exception {
+        public T call() {
             Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
 
             AbsTask<T> task = absTask.get();
@@ -973,8 +915,8 @@ public abstract class AbsTask<T extends Serializable> implements Runnable {
             cancel(false);
         }
 
-        public void cancel(boolean doListener) {
-            AbsTask<T> task = absTask.get();
+        public void cancel(final boolean doListener) {
+            final AbsTask<T> task = absTask.get();
             if (task == null) {
                 return;
             }
@@ -983,35 +925,42 @@ public abstract class AbsTask<T extends Serializable> implements Runnable {
                 interrupt();
                 HttpManger.cancel(task.hashCode());
 
-                task.isSending = false;
                 isCancelled = true;
 
-                if (task.needToast /*|| task.needCircle*/ && task.isDismissToastDialog()) {
-                    try {
-                        if (task.isDismissToastDialog()) {
-                            task.dialog.dismiss();
-                        }
-//                        if(task.isDismissCircleDialog()){
-////                            task.circleDialog.dismiss();
-//                        }
-                    } catch (Exception e) {
+                if (task.weakReference != null && task.weakReference.get() instanceof Activity) {
+                    if (!((Activity) task.weakReference.get()).isFinishing())
+                        ((Activity) task.weakReference.get()).runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+
+                                if (task.isDismissToastDialog()) {
+
+                                    task.dialog.dismiss();
+
+                                }
+
+                                if (task.isRefreshBaseTask() && ((RefreshBaseTask<T>) task).isSending) {
+
+                                    ((RefreshBaseTask<T>) task).onTaskCancel();
+
+
+                                }
+                                task.isSending = false;
+
+                                if (doListener) {
+                                    task.onCancel();
+                                }
+
+
+                            }
+                        });
+                    else
+                        task.isSending = false;
+                } else {
+                    task.isSending = false;
+                    if (doListener) {
+                        task.onCancel();
                     }
-                }
-
-                if (task.isRefreshBaseTask()) {
-                    try {
-
-                        ((RefreshBaseTask<T>) task).onTaskCancel();
-
-                    } catch (Exception e) {
-
-                    }
-
-
-                }
-
-                if (doListener) {
-                    task.onCancel();
                 }
 
                 absTask.clear();

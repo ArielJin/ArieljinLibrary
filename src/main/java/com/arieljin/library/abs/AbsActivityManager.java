@@ -6,8 +6,13 @@ import android.util.Log;
 import com.arieljin.library.utils.MyWeakHashMap;
 
 public class AbsActivityManager {
-	protected final static MyWeakHashMap<String, AbsActivity> mActivities = new MyWeakHashMap<String, AbsActivity>();
+	protected final static MyWeakHashMap<String, AbsActivity> mActivities = new MyWeakHashMap<>();
 	protected static AbsActivity mCurrentActivity;
+
+
+	public static void onCreate(AbsActivity activity) {
+		mActivities.put(activity.getClass().getName(), activity);
+	}
 
 	public static void finishActivities() {
 		for (AbsActivity activity : mActivities.values()) {

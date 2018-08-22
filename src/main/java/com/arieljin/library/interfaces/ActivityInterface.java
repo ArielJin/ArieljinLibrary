@@ -10,7 +10,7 @@ public interface ActivityInterface {
 
     void onFinishAnimation(boolean isCreate);
 
-    public static class MyThread extends Thread {
+    class MyThread extends Thread {
         private WeakReference<ActivityInterface> weakReference;
         private boolean isCreate;
 
@@ -41,12 +41,6 @@ public interface ActivityInterface {
             }
         }
     }
-
-
-
-
-
-
 
 
 }

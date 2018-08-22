@@ -19,14 +19,34 @@ public class AbsActivity extends AppCompatActivity implements ActivityInterface 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        AbsActivityManager.onCreate(this);
         initWindowsStatusBar(setStatusBarColor());
         new ActivityInterface.MyThread(this, true).start();
     }
 
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        AbsActivityManager.onResume(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        AbsActivityManager.onPause(this);
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        new ActivityInterface.MyThread(this, false).start();
+    }
+
     @Override
     protected void onDestroy() {
-        AbsActivityManager.onDestroy(this);
         super.onDestroy();
+        AbsActivityManager.onDestroy(this);
         DestoryUtil.onDestory(this);
         System.gc();
     }
