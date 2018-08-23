@@ -4,8 +4,8 @@ import android.content.Context;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
+import android.util.Log;
 
-import com.arieljin.library.widget.adapter.AbsPagerAdapter;
 import com.arieljin.library.widget.adapter.BasePagerAdapter;
 import com.arieljin.library.widget.adapter.LoopPagerAdapterWrapper;
 
@@ -76,18 +76,24 @@ public class LoopViewPager extends ViewPager {
         return mAdapter != null ? mAdapter.getRealAdapter() : null;
     }
 
+    public void setAdapterList(List list, boolean isBoundaryLooping) {
+        setBoundaryLooping(isBoundaryLooping && list.size() > 1);
+        mAdapter.setAdapterList(list);
+        setCurrentItem(0,false);
+    }
+
     @Override
-    public int getCurrentItem() {
+    public synchronized int getCurrentItem() {
         return mAdapter != null ? mAdapter.toRealPosition(super.getCurrentItem()) : 0;
     }
 
-    public void setCurrentItem(int item, boolean smoothScroll) {
+    public synchronized void setCurrentItem(int item, boolean smoothScroll) {
         int realItem = mAdapter.toInnerPosition(item);
         super.setCurrentItem(realItem, smoothScroll);
     }
 
     @Override
-    public void setCurrentItem(int item) {
+    public synchronized void setCurrentItem(int item) {
         if (getCurrentItem() != item) {
             setCurrentItem(item, true);
         }
@@ -210,6 +216,7 @@ public class LoopViewPager extends ViewPager {
                 }
             }
         }
+
     };
 
 }

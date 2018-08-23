@@ -1,7 +1,6 @@
 package com.arieljin.library.widget.adapter;
 
 import android.os.Parcelable;
-import android.support.v4.view.PagerAdapter;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +11,7 @@ import java.util.List;
  * @time 2018/8/22.
  * @email ariel.jin@tom.com
  */
-public class LoopPagerAdapterWrapper extends AbsPagerAdapter {
+public class LoopPagerAdapterWrapper extends BasePagerAdapter {
 
     private BasePagerAdapter mAdapter;
 
@@ -33,6 +32,7 @@ public class LoopPagerAdapterWrapper extends AbsPagerAdapter {
     }
 
     public LoopPagerAdapterWrapper(BasePagerAdapter adapter) {
+        super(adapter.list, adapter.render);
         this.mAdapter = adapter;
     }
 
@@ -79,8 +79,16 @@ public class LoopPagerAdapterWrapper extends AbsPagerAdapter {
         return mAdapter != null ? mAdapter.getCount() : 0;
     }
 
-    public PagerAdapter getRealAdapter() {
+    public BasePagerAdapter getRealAdapter() {
         return mAdapter;
+    }
+
+    public void setAdapterList(List list) {
+
+        if (mAdapter != null)
+            mAdapter.setList(list);
+        notifyDataSetChanged();
+
     }
 
     @Override

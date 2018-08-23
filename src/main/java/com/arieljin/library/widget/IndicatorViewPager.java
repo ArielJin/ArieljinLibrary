@@ -36,7 +36,7 @@ public class IndicatorViewPager extends ConstraintLayout implements ViewPager.On
 
     private static boolean autoPlay = false;
 
-    private static long time = 0;
+    private static int time = 0;
 
     @SuppressLint("HandlerLeak")
     private Handler handler = new Handler() {
@@ -50,7 +50,7 @@ public class IndicatorViewPager extends ConstraintLayout implements ViewPager.On
     private Runnable runnable = new Runnable() {
         @Override
         public void run() {
-            viewPager.setCurrentItem(viewPager.getCurrentItem() + 1);
+            viewPager.setCurrentItem(viewPager.getCurrentItem() + 1,true);
         }
     };
 
@@ -82,7 +82,7 @@ public class IndicatorViewPager extends ConstraintLayout implements ViewPager.On
     }
 
     public void setAutoPlay(int seconds) {
-        IndicatorViewPager.time = seconds;
+        IndicatorViewPager.time = seconds * 1000;
         IndicatorViewPager.autoPlay = IndicatorViewPager.time > 0;
         if (!autoPlay) {
             handler.removeCallbacks(runnable);
@@ -116,6 +116,7 @@ public class IndicatorViewPager extends ConstraintLayout implements ViewPager.On
         viewPager = isLoop ? new LoopViewPager(getContext()) : new ViewPager(getContext());
         LayoutParams viewPagerLP = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         viewPager.setLayoutParams(viewPagerLP);
+        viewPager.setOnPageChangeListener(this);
 
 
         indicatorGroup = new RadioGroup(getContext());
@@ -151,16 +152,27 @@ public class IndicatorViewPager extends ConstraintLayout implements ViewPager.On
 
     public void setAdapterList(final List list) {
 
-        if (viewPager.getAdapter() == null)
-            throw new NullPointerException("adapter not null!");
-        if ((list != null && list.size() == indicatorGroup.getChildCount()) || (list == null && indicatorGroup.getChildCount() == 0))
-            ((BasePagerAdapter) viewPager.getAdapter()).setList(list);
-        invalidateViews(list != null ? list.size() : 0, new OnPagerItemCountChangeListener() {
+        invalidateViews(list.size(), new OnPagerItemCountChangeListener() {
             @Override
             public void onPagerItemCountChanged() {
-                ((BasePagerAdapter) viewPager.getAdapter()).setList(list);
+                if (viewPager instanceof LoopViewPager)
+                    ((LoopViewPager) viewPager).setAdapterList(list,isLoop);
+                else
+                    ((BasePagerAdapter)viewPager.getAdapter()).setList(list);
+                play();
             }
         });
+
+//        if (viewPager.getAdapter() == null)
+//            throw new NullPointerException("adapter not null!");
+//        if ((list != null && list.size() == indicatorGroup.getChildCount()) || (list == null && indicatorGroup.getChildCount() == 0))
+//            ((BasePagerAdapter) viewPager.getAdapter()).setList(list);
+//        invalidateViews(list != null ? list.size() : 0, new OnPagerItemCountChangeListener() {
+//            @Override
+//            public void onPagerItemCountChanged() {
+//                ((BasePagerAdapter) viewPager.getAdapter()).setList(list);
+//            }
+//        });
 
     }
 
@@ -184,7 +196,6 @@ public class IndicatorViewPager extends ConstraintLayout implements ViewPager.On
                 }
                 indicatorGroup.setVisibility(VISIBLE);
 
-                viewPager.setOnPageChangeListener(this);
                 ((IndicatorView) indicatorGroup.getChildAt(0)).setChecked(true);
 
             }
@@ -216,7 +227,7 @@ public class IndicatorViewPager extends ConstraintLayout implements ViewPager.On
 
     @Override
     public void onPageSelected(int position) {
-        if (indicatorGroup.getChildCount() > 1)
+        if (indicatorGroup != null && indicatorGroup.getChildCount() > 1)
             ((IndicatorView) indicatorGroup.getChildAt(position)).setChecked(true);
 
     }
@@ -225,7 +236,7 @@ public class IndicatorViewPager extends ConstraintLayout implements ViewPager.On
     public void onPageScrollStateChanged(int state) {
 
         if (state == ViewPager.SCROLL_STATE_IDLE) {
-            viewPager.setCurrentItem(viewPager.getCurrentItem(), false);
+//            viewPager.setCurrentItem(viewPager.getCurrentItem(), false);
             play();
         } else if (state == ViewPager.SCROLL_STATE_DRAGGING) {
             cancel();
