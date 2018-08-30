@@ -30,7 +30,6 @@ import java.util.UUID;
 public class AbsDbHelper<T extends AbsDBModel> extends SQLiteOpenHelper {
 
 
-
     public static final String NOT_NULL = "not_null";
     private final String TAB_NAME;
     protected Context context;
@@ -296,9 +295,9 @@ public class AbsDbHelper<T extends AbsDBModel> extends SQLiteOpenHelper {
             try {
                 synchronized (NOT_NULL) {
                     if (byUser != null && !byUser.isEmpty()) {
-                        count = getWritableDatabase().update(TAB_NAME, createContentValues(t, saveChildren), "uid=? and byUser=?", new String[] { t.uid, byUser });
+                        count = getWritableDatabase().update(TAB_NAME, createContentValues(t, saveChildren), "uid=? and byUser=?", new String[]{t.uid, byUser});
                     } else {
-                        count = getWritableDatabase().update(TAB_NAME, createContentValues(t, saveChildren), "uid=?", new String[] { t.uid });
+                        count = getWritableDatabase().update(TAB_NAME, createContentValues(t, saveChildren), "uid=?", new String[]{t.uid});
                     }
                 }
             } catch (SQLiteException e) {
@@ -350,7 +349,7 @@ public class AbsDbHelper<T extends AbsDBModel> extends SQLiteOpenHelper {
         int count;
         synchronized (NOT_NULL) {
             if (byUser != null && !byUser.isEmpty()) {
-                count = getWritableDatabase().update(TAB_NAME, values, "byUser=?", new String[] { byUser });
+                count = getWritableDatabase().update(TAB_NAME, values, "byUser=?", new String[]{byUser});
             } else {
                 count = getWritableDatabase().update(TAB_NAME, values, null, null);
             }
@@ -377,9 +376,9 @@ public class AbsDbHelper<T extends AbsDBModel> extends SQLiteOpenHelper {
         int count;
         synchronized (NOT_NULL) {
             if (byUser != null && !byUser.isEmpty()) {
-                count = getWritableDatabase().update(TAB_NAME, values, "byUser=?" + " and " + columnName + "=?", new String[] { byUser, oldValue.toString() });
+                count = getWritableDatabase().update(TAB_NAME, values, "byUser=?" + " and " + columnName + "=?", new String[]{byUser, oldValue.toString()});
             } else {
-                count = getWritableDatabase().update(TAB_NAME, values, columnName + "=?", new String[] { oldValue.toString() });
+                count = getWritableDatabase().update(TAB_NAME, values, columnName + "=?", new String[]{oldValue.toString()});
             }
         }
         if (count > 0) {
@@ -405,9 +404,9 @@ public class AbsDbHelper<T extends AbsDBModel> extends SQLiteOpenHelper {
         int count;
         synchronized (NOT_NULL) {
             if (byUser != null && !byUser.isEmpty()) {
-                count = getWritableDatabase().update(TAB_NAME, values, "byUser=? and uid=?", new String[] { byUser, uid });
+                count = getWritableDatabase().update(TAB_NAME, values, "byUser=? and uid=?", new String[]{byUser, uid});
             } else {
-                count = getWritableDatabase().update(TAB_NAME, values, "uid=?", new String[] { uid });
+                count = getWritableDatabase().update(TAB_NAME, values, "uid=?", new String[]{uid});
             }
         }
         if (count > 0) {
@@ -433,7 +432,7 @@ public class AbsDbHelper<T extends AbsDBModel> extends SQLiteOpenHelper {
         int count;
         synchronized (NOT_NULL) {
             if (byUser != null && !byUser.isEmpty()) {
-                count = getWritableDatabase().update(TAB_NAME, values, "byUser=? and " + columnName + " in (" + inValue + ")", new String[] { byUser });
+                count = getWritableDatabase().update(TAB_NAME, values, "byUser=? and " + columnName + " in (" + inValue + ")", new String[]{byUser});
             } else {
                 count = getWritableDatabase().update(TAB_NAME, values, new String(columnName + " in (" + inValue + ")"), null);
             }
@@ -448,9 +447,9 @@ public class AbsDbHelper<T extends AbsDBModel> extends SQLiteOpenHelper {
         int count;
         synchronized (NOT_NULL) {
             if (byUser != null && !byUser.isEmpty()) {
-                count = getWritableDatabase().delete(TAB_NAME, "uid=? and byUser=?", new String[] { t.uid, byUser });
+                count = getWritableDatabase().delete(TAB_NAME, "uid=? and byUser=?", new String[]{t.uid, byUser});
             } else {
-                count = getWritableDatabase().delete(TAB_NAME, "uid=?", new String[] { t.uid });
+                count = getWritableDatabase().delete(TAB_NAME, "uid=?", new String[]{t.uid});
             }
         }
         if (count > 0) {
@@ -653,9 +652,9 @@ public class AbsDbHelper<T extends AbsDBModel> extends SQLiteOpenHelper {
         synchronized (NOT_NULL) {
             try {
                 if (byUser != null && !byUser.isEmpty()) {
-                    cursor = getWritableDatabase().query(TAB_NAME, null, "uid=? and byUser=?", new String[] { uid, byUser }, null, null, null, 0 + "," + 1);
+                    cursor = getWritableDatabase().query(TAB_NAME, null, "uid=? and byUser=?", new String[]{uid, byUser}, null, null, null, 0 + "," + 1);
                 } else {
-                    cursor = getWritableDatabase().query(TAB_NAME, null, "uid=?", new String[] { uid }, null, null, null, 0 + "," + 1);
+                    cursor = getWritableDatabase().query(TAB_NAME, null, "uid=?", new String[]{uid}, null, null, null, 0 + "," + 1);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -779,7 +778,7 @@ public class AbsDbHelper<T extends AbsDBModel> extends SQLiteOpenHelper {
         return values;
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings({"unchecked", "rawtypes"})
     protected List<T> handleQuery(Cursor cursor) {
         ArrayList<T> list = new ArrayList<T>();
 
@@ -797,6 +796,8 @@ public class AbsDbHelper<T extends AbsDBModel> extends SQLiteOpenHelper {
 
             for (Field field : entityClass.getFields()) {
                 try {
+                    if (field.getName().equals("serialVersionUID"))
+                        continue;
                     Class<?> clz = field.getType();
 
                     if (String.class.isAssignableFrom(clz)) {
