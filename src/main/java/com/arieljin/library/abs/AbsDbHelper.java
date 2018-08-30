@@ -64,7 +64,7 @@ public class AbsDbHelper<T extends AbsDBModel> extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        if (AbsApplication.isOnMainProcess()) {
+        if (AbsApplication.getInstance().isOnMainProcess()) {
             Log.i("ariel", "AbsDbHelper:onCreate");
             create(db);
         }
@@ -87,7 +87,7 @@ public class AbsDbHelper<T extends AbsDBModel> extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        if (AbsApplication.isOnMainProcess()) {
+        if (AbsApplication.getInstance().isOnMainProcess()) {
             Log.i("ariel", "AbsDbHelper:onUpgrade");
             upgrade(db);
             // MApplication.getInstance().renameFolder();
@@ -158,7 +158,7 @@ public class AbsDbHelper<T extends AbsDBModel> extends SQLiteOpenHelper {
                 builder.append(" FROM __temp__");
                 builder.append(tabName);
 
-                // Log.e("nero", builder.toString());
+                // Log.e("ariel", builder.toString());
 
                 db.execSQL(builder.toString());
                 db.execSQL("DROP TABLE __temp__" + tabName);
@@ -631,10 +631,10 @@ public class AbsDbHelper<T extends AbsDBModel> extends SQLiteOpenHelper {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-//                if (e.getMessage() != null && e.getMessage().contains("no such table")) {
-//                    upgrade(getWritableDatabase());
-//                    return query(equal, or, like, orderBy, start, count);
-//                }
+                if (e.getMessage() != null && e.getMessage().contains("no such table")) {
+                    upgrade(getWritableDatabase());
+                    return query(equal, or, like, orderBy, start, count);
+                }
                 return null;
             }
         }
@@ -659,10 +659,10 @@ public class AbsDbHelper<T extends AbsDBModel> extends SQLiteOpenHelper {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-//                if (e.getMessage() != null && e.getMessage().contains("no such table")) {
-//                    upgrade(getWritableDatabase());
-//                    return queryOne(uid);
-//                }
+                if (e.getMessage() != null && e.getMessage().contains("no such table")) {
+                    upgrade(getWritableDatabase());
+                    return queryOne(uid);
+                }
                 return null;
             }
         }

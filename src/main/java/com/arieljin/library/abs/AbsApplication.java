@@ -26,7 +26,7 @@ public abstract class AbsApplication extends Application {
         super.onCreate();
         instance = this;
         setVersionInfo();
-        PROCESS_NAME = getCurProcessName(this);
+        PROCESS_NAME = getCurProcessName();
 
     }
 
@@ -46,7 +46,7 @@ public abstract class AbsApplication extends Application {
         }
     }
 
-    private String getCurProcessName(Context context) {
+    private String getCurProcessName() {
         int pid = android.os.Process.myPid();
         ActivityManager mActivityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         for (ActivityManager.RunningAppProcessInfo appProcess : mActivityManager.getRunningAppProcesses()) {
@@ -78,8 +78,8 @@ public abstract class AbsApplication extends Application {
         return "";
     }
 
-    public static boolean isOnMainProcess() {
-        return PROCESS_NAME.equals("com.bingdian.kaqu");
+    public boolean isOnMainProcess() {
+        return getCurProcessName().equals(PROCESS_NAME);
     }
 
     protected abstract String getAppChannelMetaDataKey();
