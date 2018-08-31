@@ -297,7 +297,7 @@ public abstract class AbsTask<T extends Serializable> implements Runnable {
 //                        }
 
                         if (onTaskCompleteListeners != null) {
-                            if (context instanceof Activity && !((Activity) context).isFinishing()) {
+                            if (context instanceof Activity && isCanCallbackToUi()) {
                                 ((Activity) context).runOnUiThread(new Runnable() {
 
                                     @Override
@@ -532,7 +532,7 @@ public abstract class AbsTask<T extends Serializable> implements Runnable {
         if (weakReference.get() != null && weakReference.get() instanceof Activity) {
 
 
-            if (!((Activity) weakReference.get()).isFinishing())
+            if (isCanCallbackToUi())
                 ((Activity) weakReference.get()).runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -658,7 +658,7 @@ public abstract class AbsTask<T extends Serializable> implements Runnable {
 
             if (weakReference.get() != null && weakReference.get() instanceof Activity) {
 
-                if (!((Activity) weakReference.get()).isFinishing()) {
+                if (isCanCallbackToUi()) {
                     final String finalError = error;
                     ((Activity) weakReference.get()).runOnUiThread(new Runnable() {
                         @Override
@@ -699,6 +699,10 @@ public abstract class AbsTask<T extends Serializable> implements Runnable {
         } else {
             isSending = false;
         }
+    }
+
+    protected boolean isCanCallbackToUi() {
+        return !((Activity) weakReference.get()).isFinishing();
     }
 
 //    protected void handleFail(String error) {
