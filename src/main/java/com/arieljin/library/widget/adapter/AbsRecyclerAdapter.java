@@ -20,6 +20,11 @@ public class AbsRecyclerAdapter<T extends Serializable> extends RecyclerView.Ada
         this.render = render;
     }
 
+    public void setList(List<T> list) {
+        this.list = list;
+        notifyDataSetChanged();
+    }
+
     @Override
     public AbsRecyclerVH onCreateViewHolder(ViewGroup parent, int viewType) {
 

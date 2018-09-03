@@ -42,7 +42,7 @@ public class RefreshBaseActivity extends AbsActivity implements RefreshBaseTaskI
 
     @Override
     public RefreshBaseInterface getRefreshInterface() {
-        return refreshBaseInterface;
+        return refreshBaseInterface.getRefreshInterface();
     }
 
     @Override
@@ -51,14 +51,14 @@ public class RefreshBaseActivity extends AbsActivity implements RefreshBaseTaskI
     }
 
     @Override
-    public <T extends Serializable> void setTask(RefreshBaseTask<T> task) {
-        refreshBaseInterface.setTask(task);
+    public <T extends Serializable> void addTask(RefreshBaseTask<T> task) {
+        refreshBaseInterface.addTask(task);
 
     }
 
     @Override
-    public void startTask() {
-        refreshBaseInterface.startTask();
+    public void startTasks() {
+        refreshBaseInterface.startTasks();
 
     }
 

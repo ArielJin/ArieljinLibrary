@@ -6,6 +6,9 @@ import com.arieljin.library.interfaces.RefreshBaseInterface;
 import com.arieljin.library.task.RefreshBaseTask;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  * @time 2018/7/26.
@@ -14,7 +17,8 @@ import java.io.Serializable;
 public class RefreshBaseImpl implements RefreshBaseInterface {
 
     private SwipeRefreshLayout swipeRefreshLayout;
-    private RefreshBaseTask task;
+    private Set<RefreshBaseTask> taskSet;
+    private Iterator<RefreshBaseTask> iterator = null;
 
     private RefreshBaseImpl() {
     }
@@ -25,7 +29,7 @@ public class RefreshBaseImpl implements RefreshBaseInterface {
     }
 
 
-    private void init(){
+    private void init() {
     }
 
     @Override
@@ -42,8 +46,10 @@ public class RefreshBaseImpl implements RefreshBaseInterface {
 
     @Override
     public void onTaskComplete() {
-        swipeRefreshLayout.setRefreshing(false);
-
+        if (iterator != null && iterator.hasNext())
+            iterator.next().start();
+        else
+            swipeRefreshLayout.setRefreshing(false);
     }
 
     @Override
@@ -54,14 +60,25 @@ public class RefreshBaseImpl implements RefreshBaseInterface {
 
     @Override
     public void onTaskFailed() {
-        swipeRefreshLayout.setRefreshing(false);
+        if (iterator != null && iterator.hasNext())
+            iterator.next().start();
+        else
+            swipeRefreshLayout.setRefreshing(false);
+
 
     }
 
     @Override
     public void onTaskCancel() {
-        swipeRefreshLayout.setRefreshing(false);
+        if (iterator != null && iterator.hasNext())
+            iterator.next().start();
+        else
+            swipeRefreshLayout.setRefreshing(false);
+    }
 
+    @Override
+    public RefreshBaseInterface getRefreshInterface() {
+        return this;
     }
 
     @Override
@@ -70,16 +87,24 @@ public class RefreshBaseImpl implements RefreshBaseInterface {
     }
 
     @Override
-    public <T extends Serializable> void setTask(RefreshBaseTask<T> task) {
-        this.task = task;
+    public <T extends Serializable> void addTask(RefreshBaseTask<T> task) {
+        if (task == null)
+            return;
+        if (taskSet == null)
+            taskSet = new HashSet<>();
+        taskSet.add(task);
     }
 
     @Override
-    public void startTask() {
+    public void startTasks() {
 
-        if (task != null) {
-            task.start();
+        if (taskSet != null && !taskSet.isEmpty()) {
+            iterator = taskSet.iterator();
+            if (iterator.hasNext())
+                iterator.next().start();
         } else {
+            if (iterator != null)
+                iterator = null;
             if (swipeRefreshLayout.isRefreshing())
                 swipeRefreshLayout.setRefreshing(false);
         }
@@ -91,7 +116,7 @@ public class RefreshBaseImpl implements RefreshBaseInterface {
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                startTask();
+                startTasks();
             }
         });
     }

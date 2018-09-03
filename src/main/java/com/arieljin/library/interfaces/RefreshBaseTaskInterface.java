@@ -14,9 +14,9 @@ public interface RefreshBaseTaskInterface {
 
     void setSwipeRefreshLayoutEnabled(boolean enabled);
 
-    <T extends Serializable>  void setTask(RefreshBaseTask<T> task);
+    <T extends Serializable>  void addTask(RefreshBaseTask<T> task);
 
-    void startTask();
+    void startTasks();
 
     void setOnRefreshListener();
 }

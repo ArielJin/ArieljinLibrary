@@ -38,7 +38,7 @@ public abstract class RefreshBaseFragment extends AbsFragment implements Refresh
         return view;
     }
 
-    protected void init(){
+    protected void init() {
 
     }
 
@@ -48,7 +48,7 @@ public abstract class RefreshBaseFragment extends AbsFragment implements Refresh
 
     @Override
     public RefreshBaseInterface getRefreshInterface() {
-        return refreshBaseInterface;
+        return refreshBaseInterface.getRefreshInterface();
     }
 
     @Override
@@ -58,14 +58,14 @@ public abstract class RefreshBaseFragment extends AbsFragment implements Refresh
     }
 
     @Override
-    public <T extends Serializable> void setTask(RefreshBaseTask<T> task) {
-        refreshBaseInterface.setTask(task);
+    public <T extends Serializable> void addTask(RefreshBaseTask<T> task) {
+        refreshBaseInterface.addTask(task);
 
     }
 
     @Override
-    public void startTask() {
-        refreshBaseInterface.startTask();
+    public void startTasks() {
+        refreshBaseInterface.startTasks();
 
     }
 
