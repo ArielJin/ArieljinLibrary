@@ -29,6 +29,7 @@ public class RefreshBaseActivity extends AbsActivity implements RefreshBaseTaskI
         SwipeRefreshLayout swipeRefreshLayout = this.findViewById(R.id.ariel_base_srl);
         swipeRefreshLayout.addView(view);
         refreshBaseInterface = new RefreshBaseImpl(swipeRefreshLayout);
+        registerRefreshListener();
 
     }
 
@@ -38,6 +39,7 @@ public class RefreshBaseActivity extends AbsActivity implements RefreshBaseTaskI
         SwipeRefreshLayout swipeRefreshLayout = this.findViewById(R.id.ariel_base_srl);
         swipeRefreshLayout.addView(LayoutInflater.from(this).inflate(layoutResID, null));
         refreshBaseInterface = new RefreshBaseImpl(swipeRefreshLayout);
+        registerRefreshListener();
     }
 
     @Override
@@ -63,7 +65,18 @@ public class RefreshBaseActivity extends AbsActivity implements RefreshBaseTaskI
     }
 
     @Override
-    public void setOnRefreshListener() {
-        refreshBaseInterface.setOnRefreshListener();
+    public void registerRefreshListener() {
+
+        refreshBaseInterface.registerRefreshListener();
+
+
     }
+
+    @Override
+    public void unRegisterRefreshListener() {
+
+        refreshBaseInterface.unRegisterRefreshListener();
+
+    }
+
 }

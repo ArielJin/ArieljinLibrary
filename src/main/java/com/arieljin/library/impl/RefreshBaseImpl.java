@@ -83,6 +83,10 @@ public class RefreshBaseImpl implements RefreshBaseInterface {
 
     @Override
     public void setSwipeRefreshLayoutEnabled(boolean enabled) {
+        if (enabled)
+            registerRefreshListener();
+        else
+            unRegisterRefreshListener();
         swipeRefreshLayout.setEnabled(enabled);
     }
 
@@ -112,13 +116,21 @@ public class RefreshBaseImpl implements RefreshBaseInterface {
     }
 
     @Override
-    public void setOnRefreshListener() {
+    public void registerRefreshListener() {
+
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 startTasks();
             }
         });
+
     }
+
+    @Override
+    public void unRegisterRefreshListener() {
+        swipeRefreshLayout.setOnRefreshListener(null);
+    }
+
 
 }

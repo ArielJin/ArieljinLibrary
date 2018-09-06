@@ -18,5 +18,8 @@ public interface RefreshBaseTaskInterface {
 
     void startTasks();
 
-    void setOnRefreshListener();
+    void registerRefreshListener();
+
+    void unRegisterRefreshListener();
+
 }

@@ -33,6 +33,7 @@ public abstract class RefreshBaseFragment extends AbsFragment implements Refresh
         View contentView = onCreateContentView(inflater, container, savedInstanceState);
         swipeRefreshLayout.addView(contentView);
         refreshBaseInterface = new RefreshBaseImpl(swipeRefreshLayout);
+        registerRefreshListener();
         init();
         initContentView(contentView);
         return view;
@@ -70,9 +71,18 @@ public abstract class RefreshBaseFragment extends AbsFragment implements Refresh
     }
 
     @Override
-    public void setOnRefreshListener() {
-        refreshBaseInterface.setOnRefreshListener();
+    public void registerRefreshListener() {
+
+        refreshBaseInterface.registerRefreshListener();
+
+
     }
+
+    @Override
+    public void unRegisterRefreshListener() {
+        refreshBaseInterface.unRegisterRefreshListener();
+    }
+
 
     public abstract View onCreateContentView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState);
 

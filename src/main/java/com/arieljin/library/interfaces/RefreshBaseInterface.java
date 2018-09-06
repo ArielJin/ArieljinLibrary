@@ -13,5 +13,4 @@ public interface RefreshBaseInterface extends OnTaskStatusChangeListener, Refres
 
     void setSwipeRefreshLayoutEnabled(boolean enabled);
 
-
 }
