@@ -73,6 +73,11 @@ public class RefreshBaseActivity extends AbsActivity implements RefreshBaseTaskI
     }
 
     @Override
+    public void registerRefreshListener(SwipeRefreshLayout.OnRefreshListener onRefreshListener) {
+        refreshBaseInterface.registerRefreshListener(onRefreshListener);
+    }
+
+    @Override
     public void unRegisterRefreshListener() {
 
         refreshBaseInterface.unRegisterRefreshListener();

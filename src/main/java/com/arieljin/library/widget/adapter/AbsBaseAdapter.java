@@ -4,6 +4,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
+import com.arieljin.library.widget.adapter.render.AbsAdapterVH;
 import com.arieljin.library.widget.adapter.render.AdapterRender;
 
 import java.io.Serializable;
@@ -45,29 +46,34 @@ public class AbsBaseAdapter<T extends Serializable> extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup viewGroup) {
-        ViewHoder viewHoder;
+//        ViewHoder viewHoder;
+        AbsAdapterVH vh;
         if (convertView == null) {
-            convertView = render.getReusableComponent(viewGroup).getItemView();
-            viewHoder = new ViewHoder(render);
-            convertView.setTag(viewHoder);
+            vh = render.getReusableComponent(viewGroup);
+            convertView = vh.getItemView();
+//            convertView = render.getReusableComponent(viewGroup).getItemView();
+//            viewHoder = new ViewHoder(render);
+            convertView.setTag(vh);
         } else {
-            viewHoder = (ViewHoder) convertView.getTag();
+//            viewHoder = (ViewHoder) convertView.getTag();
+            vh = (AbsAdapterVH) convertView.getTag();
         }
 
-        viewHoder.render.fitDatas(getItem(position));
-        viewHoder.render.fitEvents(getItem(position));
+        AdapterRender vhRend = render.getVhTag(vh);
+        vhRend.fitDatas(vh, getItem(position), position);
+        vhRend.fitEvents(vh, getItem(position), position);
 
         return convertView;
     }
 
-    static class ViewHoder {
-
-        private AdapterRender render;
-
-        public ViewHoder(AdapterRender render) {
-            this.render = render;
-        }
-    }
+//    static class ViewHoder {
+//
+//        private AdapterRender render;
+//
+//        public ViewHoder(AdapterRender render) {
+//            this.render = render;
+//        }
+//    }
 
 
 }

@@ -59,7 +59,7 @@ public abstract class AbsTask<T extends Serializable> implements Runnable {
 //    protected CircleProgressBar circleProgressBar;
 
     public boolean needUploadFile, cancelable = true, needLast, needOnlyLast, needToast, /*needCircle = true, */
-            needRestart, isSending, needLastOnce;
+            needRestart, isSending, needLastOnce, isDebug = false;
     private int delay = 1, progress;
     public int method_type = HttpManger.POST;
 //    public String loadingText = "加载中";
@@ -135,24 +135,27 @@ public abstract class AbsTask<T extends Serializable> implements Runnable {
 
             } catch (Throwable throwable) {
                 throwable.printStackTrace();
+                if (isDebug)
+                    Log.e(getClass().getName(), "\n" + "response:" + (request != null ? request.getBody(weakReference.get()).toString() : "null") + "\n");
                 if (needLast && needLastOnce) {
                     JSONObject lastJson = null;
                     try {
                         lastJson = loadLastJson();
                         if (lastJson != null) {
                             return parseJson(lastJson);
-
+                        } else {
+                            failed(!TextUtils.isEmpty(throwable.getMessage())?throwable.getMessage() + ",未获取到缓存数据":"网络异常, 未获取到缓存数据");
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
-                        failed("读取缓存数据异常");
+                        failed(!TextUtils.isEmpty(throwable.getMessage())?throwable.getMessage() + ",读取缓存数据异常":"网络异常, 读取缓存数据异常");
                     } catch (Throwable throwable1) {
                         throwable1.printStackTrace();
-                        failed("解析缓存数据异常");
+                        failed(!TextUtils.isEmpty(throwable.getMessage())?throwable.getMessage() + ",解析缓存数据异常":"网络异常, 解析缓存数据异常");
                     }
 
                 } else {
-                    failed("网络异常");
+                    failed(!TextUtils.isEmpty(throwable.getMessage())?throwable.getMessage():"网络异常");
                 }
             }
 
@@ -164,12 +167,13 @@ public abstract class AbsTask<T extends Serializable> implements Runnable {
 
         String url = getApiMethodName();
 
-        Log.i("ArielJin", url);
+//        Log.i("ArielJin", url);
 
         HttpResponse response;
         // if (request != null) {
         // Log.i("apis", request.getBody(context.get()).toString());
         // }
+
         if (needUploadFile && request != null) {
             response = HttpManger.getResponse(hashCode(), url, headers, request.getMultipartEntity(weakReference.get(), this));
             request.finish();
@@ -182,6 +186,9 @@ public abstract class AbsTask<T extends Serializable> implements Runnable {
         }
 
         String s = EntityUtils.toString(response.getEntity(), "UTF-8").trim();
+
+        if (isDebug)
+            Log.e(getClass().getName(), "   请求成功：" + "\n" + "url:" + url + "\n" + "response:" + request.getBody(weakReference.get()).toString() + "\n" + "header:" + (headers != null?headers.toString():"null") + "\n" + "result:" + s);
 
         return new JSONObject(s);
     }

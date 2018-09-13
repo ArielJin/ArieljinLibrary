@@ -24,24 +24,46 @@ public class AbsRecyclerAdapter<T extends Serializable> extends RecyclerView.Ada
         notifyDataSetChanged();
     }
 
+    public void addList(List<T> list) {
+
+        if (list != null && !list.isEmpty()) {
+            if (this.list != null) {
+                this.list.addAll(list);
+            } else {
+                this.list = list;
+            }
+            notifyDataSetChanged();
+        }
+    }
+
+    public List<T> getList() {
+        return list;
+    }
+
     @Override
     public AbsRecyclerAdapterVH onCreateViewHolder(ViewGroup parent, int viewType) {
-
         AbsRecyclerAdapterVH vh = render.getReusableComponent(parent);
 //        vh.itemView.setTag(R.id.ariel_recycler_render_item, render);
-        vh.setRender(this.render);
+//        vh.setRender(this.render);
         return vh;
     }
 
     @Override
     public void onBindViewHolder(AbsRecyclerAdapterVH holder, int position) {
-        AdapterRecyclerRender render = holder.getRender();
+//        AdapterRecyclerRender<T> render = holder.getRender();
+        AdapterRecyclerRender<T>  vhRender= render.getVhTag(holder);
         T t = list.get(position);
-        if (render != null) {
-            render.fitDatas(t);
-            render.fitEvents(t);
+        if (vhRender != null) {
+            vhRender.fitDatas(holder,t, position);
+            vhRender.fitEvents(holder,t, position);
         }
 
+    }
+
+
+    @Override
+    public int getItemViewType(int position) {
+        return position;
     }
 
     @Override

@@ -11,8 +11,8 @@ interface AbsAdapterRenderListener<V, T> {
 
     V getReusableComponent(ViewGroup parent);
 
-    void fitEvents(T t);
+    void fitDatas(V v,T t, int position);
 
-    void fitDatas(T t);
+    void fitEvents(V v,T t, int position);
 
 }

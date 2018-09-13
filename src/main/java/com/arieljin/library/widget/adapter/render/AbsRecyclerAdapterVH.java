@@ -10,7 +10,7 @@ import android.view.View;
 public class AbsRecyclerAdapterVH extends RecyclerView.ViewHolder implements AdapterVHI{
 
     private AdapterVHI adapterVHI;
-    private AdapterRecyclerRender render;
+//    private AdapterRecyclerRender render;
 
 
     public AbsRecyclerAdapterVH(View itemView) {
@@ -33,11 +33,11 @@ public class AbsRecyclerAdapterVH extends RecyclerView.ViewHolder implements Ada
         return adapterVHI.getItemView();
     }
 
-    public void setRender(AdapterRecyclerRender render) {
-        this.render = render;
-    }
+//    public void setRender(AdapterRecyclerRender render) {
+//        this.render = render;
+//    }
 
-    public AdapterRecyclerRender getRender() {
-        return render;
-    }
+//    public AdapterRecyclerRender getRender() {
+//        return render;
+//    }
 }

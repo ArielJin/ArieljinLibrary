@@ -79,6 +79,11 @@ public abstract class RefreshBaseFragment extends AbsFragment implements Refresh
     }
 
     @Override
+    public void registerRefreshListener(SwipeRefreshLayout.OnRefreshListener onRefreshListener) {
+        refreshBaseInterface.registerRefreshListener(onRefreshListener);
+    }
+
+    @Override
     public void unRegisterRefreshListener() {
         refreshBaseInterface.unRegisterRefreshListener();
     }

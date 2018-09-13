@@ -265,7 +265,7 @@ public final class HttpManger {
 			response = httpClient.execute(request);
 		} catch (Exception e) {
 			e.printStackTrace();
-			Log.i("arieljin", "Error Response: " + e.getMessage());
+			Log.e("arieljin", "Error Response: " + e.getMessage());
 			throw new Exception("网络异常");
 		} finally {
 			requests.remove(id);
@@ -274,7 +274,7 @@ public final class HttpManger {
 		if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
 			// saveCookie(httpClient.getCookieStore());
 		} else {
-			Log.i("arieljin", "Error Response: " + response.getStatusLine().toString() + ": " + url);
+			Log.e("arieljin", "Error Response: " + response.getStatusLine().toString() + ": " + url);
 		}
 
 		return response;
@@ -315,7 +315,7 @@ public final class HttpManger {
 		} catch (Exception e) {
 			if (!request.isAborted()) {
 				e.printStackTrace();
-				Log.i("arieljin", "Error Response: " + url + ":" + e.getMessage());
+				Log.e("arieljin", "Error Response: " + url + ":" + e.getMessage());
 				throw new Exception("网络异常");
 			}
 		} finally {
@@ -331,7 +331,7 @@ public final class HttpManger {
 		} else {
 			// String s = EntityUtils.toString(response.getEntity(), "UTF-8");
 			// Log.e("json", s);
-			Log.i("arieljin --" + url, "    --- Error Response: " + response.getStatusLine().toString());
+			Log.e("arieljin --" + url, "    --- Error Response: " + response.getStatusLine().toString());
 			throw new Exception("网络异常:" + response.getStatusLine().getStatusCode());
 		}
 

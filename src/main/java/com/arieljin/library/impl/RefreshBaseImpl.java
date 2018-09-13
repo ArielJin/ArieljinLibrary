@@ -128,6 +128,12 @@ public class RefreshBaseImpl implements RefreshBaseInterface {
     }
 
     @Override
+    public void registerRefreshListener(SwipeRefreshLayout.OnRefreshListener onRefreshListener) {
+        unRegisterRefreshListener();
+        swipeRefreshLayout.setOnRefreshListener(onRefreshListener);
+    }
+
+    @Override
     public void unRegisterRefreshListener() {
         swipeRefreshLayout.setOnRefreshListener(null);
     }

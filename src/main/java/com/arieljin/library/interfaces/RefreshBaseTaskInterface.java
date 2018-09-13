@@ -1,5 +1,7 @@
 package com.arieljin.library.interfaces;
 
+import android.support.v4.widget.SwipeRefreshLayout;
+
 import com.arieljin.library.task.RefreshBaseTask;
 
 import java.io.Serializable;
@@ -19,6 +21,8 @@ public interface RefreshBaseTaskInterface {
     void startTasks();
 
     void registerRefreshListener();
+
+    void registerRefreshListener(SwipeRefreshLayout.OnRefreshListener onRefreshListener);
 
     void unRegisterRefreshListener();
 
