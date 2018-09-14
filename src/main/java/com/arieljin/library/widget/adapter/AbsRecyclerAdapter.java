@@ -40,6 +40,12 @@ public class AbsRecyclerAdapter<T extends Serializable> extends RecyclerView.Ada
         return list;
     }
 
+    public void clean(){
+        if (list != null && !list.isEmpty())
+            list.clear();
+        notifyDataSetChanged();
+    }
+
     @Override
     public AbsRecyclerAdapterVH onCreateViewHolder(ViewGroup parent, int viewType) {
         AbsRecyclerAdapterVH vh = render.getReusableComponent(parent);

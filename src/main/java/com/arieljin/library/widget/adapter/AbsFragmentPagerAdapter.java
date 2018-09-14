@@ -1,10 +1,8 @@
 package com.arieljin.library.widget.adapter;
 
-import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.util.Log;
 import android.view.ViewGroup;
 
 import java.util.List;
@@ -25,14 +23,17 @@ public class AbsFragmentPagerAdapter extends FragmentPagerAdapter {
         this.fragments = fragments;
     }
 
+    public List<Fragment> getFragments() {
+        return fragments;
+    }
+
     @Override
     public Fragment getItem(int position) {
         Fragment fragment;
-        Log.i("ariel", "getItem");
         fragment = fragments.get(position);
-        Bundle bundle = new Bundle();
-        bundle.putString("id", "" + position);
-        fragment.setArguments(bundle);
+//        Bundle bundle = new Bundle();
+//        bundle.putString("id", "" + position);
+//        fragment.setArguments(bundle);
 
         return fragment;
     }
