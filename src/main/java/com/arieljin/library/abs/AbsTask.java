@@ -144,18 +144,18 @@ public abstract class AbsTask<T extends Serializable> implements Runnable {
                         if (lastJson != null) {
                             return parseJson(lastJson);
                         } else {
-                            failed(!TextUtils.isEmpty(throwable.getMessage())?throwable.getMessage() + ",未获取到缓存数据":"网络异常, 未获取到缓存数据");
+                            failed(!TextUtils.isEmpty(throwable.getMessage()) ? throwable.getMessage() + ",未获取到缓存数据" : "网络异常, 未获取到缓存数据");
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
-                        failed(!TextUtils.isEmpty(throwable.getMessage())?throwable.getMessage() + ",读取缓存数据异常":"网络异常, 读取缓存数据异常");
+                        failed(!TextUtils.isEmpty(throwable.getMessage()) ? throwable.getMessage() + ",读取缓存数据异常" : "网络异常, 读取缓存数据异常");
                     } catch (Throwable throwable1) {
                         throwable1.printStackTrace();
-                        failed(!TextUtils.isEmpty(throwable.getMessage())?throwable.getMessage() + ",解析缓存数据异常":"网络异常, 解析缓存数据异常");
+                        failed(!TextUtils.isEmpty(throwable.getMessage()) ? throwable.getMessage() + ",解析缓存数据异常" : "网络异常, 解析缓存数据异常");
                     }
 
                 } else {
-                    failed(!TextUtils.isEmpty(throwable.getMessage())?throwable.getMessage():"网络异常");
+                    failed(!TextUtils.isEmpty(throwable.getMessage()) ? throwable.getMessage() : "网络异常");
                 }
             }
 
@@ -188,7 +188,7 @@ public abstract class AbsTask<T extends Serializable> implements Runnable {
         String s = EntityUtils.toString(response.getEntity(), "UTF-8").trim();
 
         if (isDebug)
-            Log.e(getClass().getName(), "   请求成功：" + "\n" + "url:" + url + "\n" + "response:" + request.getBody(weakReference.get()).toString() + "\n" + "header:" + (headers != null?headers.toString():"null") + "\n" + "result:" + s);
+            Log.e(getClass().getName(), "   请求成功：" + "\n" + "url:" + url + "\n" + "response:" + request.getBody(weakReference.get()).toString() + "\n" + "header:" + (headers != null ? headers.toString() : "null") + "\n" + "result:" + s);
 
         return new JSONObject(s);
     }
@@ -247,8 +247,26 @@ public abstract class AbsTask<T extends Serializable> implements Runnable {
         isSending = true;
 
         try {
+            showDialog();
             T t = ThreadPoolManager.httpSubmit(thread = new MyThread<T>(this)).get();
-            isSending = false;
+
+            if (weakReference.get() instanceof Activity && !((Activity) weakReference.get()).isFinishing())
+                ((Activity) weakReference.get()).runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (isDismissToastDialog())
+                            dialog.dismiss();
+                        if (isRefreshBaseTask() && ((RefreshBaseTask<T>) AbsTask.this).onTaskSending()) {
+
+                            ((RefreshBaseTask<T>) AbsTask.this).onTaskCancel();
+
+
+                        }
+                        isSending = false;
+                    }
+                });
+            else
+                isSending = false;
             return t;
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -333,18 +351,11 @@ public abstract class AbsTask<T extends Serializable> implements Runnable {
                         return;
                     }
 
-                    if ((needToast ||/*needCircle*/ isRefreshBaseTask()) && !thread.isRestart && !isLoadMore) {
-                        if (context instanceof Activity && !((Activity) context).isFinishing()) {
-                            ((Activity) context).runOnUiThread(new Runnable() {
+                    showDialog();
 
-                                @Override
-                                public void run() {
-                                    showDialog();
-                                }
-                            });
-                        }
-//                        else {
-//                            MainHandlerUtil.post(new Runnable() {
+//                    if ((needToast ||/*needCircle*/ isRefreshBaseTask()) && !thread.isRestart && !isLoadMore) {
+//                        if (context instanceof Activity && !((Activity) context).isFinishing()) {
+//                            ((Activity) context).runOnUiThread(new Runnable() {
 //
 //                                @Override
 //                                public void run() {
@@ -352,7 +363,16 @@ public abstract class AbsTask<T extends Serializable> implements Runnable {
 //                                }
 //                            });
 //                        }
-                    }
+////                        else {
+////                            MainHandlerUtil.post(new Runnable() {
+////
+////                                @Override
+////                                public void run() {
+////                                    showDialog();
+////                                }
+////                            });
+////                        }
+//                    }
 
                     ThreadPoolManager.httpExecute(thread);
                 }
@@ -361,27 +381,56 @@ public abstract class AbsTask<T extends Serializable> implements Runnable {
     }
 
     private void showDialog() {
-        initTaskDialog();
-        if (isShowToastDialog() || /*isShowCircleDialog()*/ isRefreshBaseTask()) {
-            Context context = weakReference.get();
-            if (context != null && context instanceof Activity && !((Activity) context).isFinishing()) {
-                try {
-                    if (isShowToastDialog()) {
-                        dialog.show();
-                        progressBar.setProgress(progress = 0);
-                        setProgress();
-                    }
-                    if (isRefreshBaseTask()) {
+
+
+        if ((needToast ||/*needCircle*/ isRefreshBaseTask()) && ((thread != null && !thread.isRestart && !thread.isLoadMore) || thread == null)) {
+            if (weakReference.get() instanceof Activity && !((Activity) weakReference.get()).isFinishing()) {
+                ((Activity) weakReference.get()).runOnUiThread(new Runnable() {
+
+                    @Override
+                    public void run() {
+
+                        initTaskDialog();
+                        if (isShowToastDialog()) {
+                            dialog.show();
+                            progressBar.setProgress(progress = 0);
+                            setProgress();
+                        }
+                        if (isRefreshBaseTask()) {
 //                        circleDialog.show();
-                        ((RefreshBaseTask<T>) this).onTaskStart();
+                            ((RefreshBaseTask<T>) AbsTask.this).onTaskStart();
+
+                        }
+
 
                     }
-                } catch (Throwable e) {
-
-                }
-
+                });
             }
+
         }
+
+
+//        initTaskDialog();
+//        if (isShowToastDialog() || /*isShowCircleDialog()*/ isRefreshBaseTask()) {
+//            Context context = weakReference.get();
+//            if (context != null && context instanceof Activity && !((Activity) context).isFinishing()) {
+//                try {
+//                    if (isShowToastDialog()) {
+//                        dialog.show();
+//                        progressBar.setProgress(progress = 0);
+//                        setProgress();
+//                    }
+//                    if (isRefreshBaseTask()) {
+////                        circleDialog.show();
+//                        ((RefreshBaseTask<T>) this).onTaskStart();
+//
+//                    }
+//                } catch (Throwable e) {
+//
+//                }
+//
+//            }
+//        }
     }
 
     private boolean isDismissToastDialog() {

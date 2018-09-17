@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.text.TextUtils;
 import android.util.Log;
 
 import java.io.Serializable;
@@ -653,8 +654,11 @@ public class AbsDbHelper<T extends AbsDBModel> extends SQLiteOpenHelper {
             try {
                 if (byUser != null && !byUser.isEmpty()) {
                     cursor = getWritableDatabase().query(TAB_NAME, null, "uid=? and byUser=?", new String[]{uid, byUser}, null, null, null, 0 + "," + 1);
-                } else {
+                } else if (!TextUtils.isEmpty(uid)){
                     cursor = getWritableDatabase().query(TAB_NAME, null, "uid=?", new String[]{uid}, null, null, null, 0 + "," + 1);
+                } else {
+                    return null;
+//                    cursor = getWritableDatabase().query(TAB_NAME, null, null, null, null, null, null, null);
                 }
             } catch (Exception e) {
                 e.printStackTrace();

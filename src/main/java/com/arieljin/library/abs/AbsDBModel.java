@@ -17,4 +17,9 @@ public class AbsDBModel extends AbsModel{
     public AbsDBModel(JSONObject jsonObject) {
         super(jsonObject);
     }
+
+    @Override
+    protected void parse(JSONObject jsonObject) {
+        super.parse(jsonObject);
+    }
 }
