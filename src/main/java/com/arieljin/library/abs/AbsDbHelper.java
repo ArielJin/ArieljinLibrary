@@ -516,6 +516,16 @@ public class AbsDbHelper<T extends AbsDBModel> extends SQLiteOpenHelper {
     }
 
     public List<T> query(Map<String, Object> equal, Map<String, Object> or, Map<String, String> like, String orderBy, int start, int count) {
+
+        return query(equal, or, like, orderBy, start, count, 2);
+
+
+    }
+
+
+    private List<T> query(Map<String, Object> equal, Map<String, Object> or, Map<String, String> like, String orderBy, int start, int count, int queryCount) {
+        if (queryCount <= 0)
+            return null;
         if (byUser != null && !byUser.isEmpty()) {
             if (equal == null) {
                 equal = new HashMap<String, Object>();
@@ -633,7 +643,7 @@ public class AbsDbHelper<T extends AbsDBModel> extends SQLiteOpenHelper {
                 e.printStackTrace();
                 if (e.getMessage() != null && e.getMessage().contains("no such table")) {
                     upgrade(getWritableDatabase());
-                    return query(equal, or, like, orderBy, start, count);
+                    return query(equal, or, like, orderBy, start, count, --queryCount);
                 }
                 return null;
             }
@@ -649,12 +659,18 @@ public class AbsDbHelper<T extends AbsDBModel> extends SQLiteOpenHelper {
     }
 
     public T queryOne(String uid) {
+        return queryOne(uid, 2);
+    }
+
+    private T queryOne(String uid, int queryCount) {
+        if (queryCount <= 0)
+            return null;
         Cursor cursor = null;
         synchronized (NOT_NULL) {
             try {
                 if (byUser != null && !byUser.isEmpty()) {
                     cursor = getWritableDatabase().query(TAB_NAME, null, "uid=? and byUser=?", new String[]{uid, byUser}, null, null, null, 0 + "," + 1);
-                } else if (!TextUtils.isEmpty(uid)){
+                } else if (!TextUtils.isEmpty(uid)) {
                     cursor = getWritableDatabase().query(TAB_NAME, null, "uid=?", new String[]{uid}, null, null, null, 0 + "," + 1);
                 } else {
                     return null;
@@ -664,7 +680,7 @@ public class AbsDbHelper<T extends AbsDBModel> extends SQLiteOpenHelper {
                 e.printStackTrace();
                 if (e.getMessage() != null && e.getMessage().contains("no such table")) {
                     upgrade(getWritableDatabase());
-                    return queryOne(uid);
+                    return queryOne(uid, --queryCount);
                 }
                 return null;
             }
