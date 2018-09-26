@@ -276,6 +276,26 @@ public abstract class AbsTask<T extends Serializable> implements Runnable {
         return null;
     }
 
+    public T getInBackground() {
+        if (thread != null) {
+            thread.cancel();
+        }
+
+        isSending = true;
+
+        try {
+            T t = ThreadPoolManager.httpSubmit(thread = new MyThread<T>(this)).get();
+
+            isSending = false;
+            return t;
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public void start() {
         start(false, false);
     }

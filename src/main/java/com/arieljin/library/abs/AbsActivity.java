@@ -71,11 +71,11 @@ public class AbsActivity extends AppCompatActivity implements ActivityInterface 
 
                 decorView.setSystemUiVisibility(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ?
                         View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+//                                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                                 | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                                 | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR :
                         View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+//                                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                                 | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
 //                     | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
 //                    | View.SYSTEM_UI_FLAG_FULLSCREEN
