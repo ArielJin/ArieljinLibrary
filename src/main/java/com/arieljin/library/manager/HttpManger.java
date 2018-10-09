@@ -77,7 +77,7 @@ public final class HttpManger {
 			HttpProtocolParams.setContentCharset(params, HTTP.UTF_8);
 			HttpProtocolParams.setUseExpectContinue(params, true);
 //			HttpProtocolParams.setUserAgent(params, "Mozilla/5.0(Linux;U;Android 2.2.1;en-us;Nexus One Build.FRG83) " + "AppleWebKit/553.1(KHTML,like Gecko) Version/4.0 Mobile Safari/533.1");
-			HttpProtocolParams.setUserAgent(params, AbsApplication.getInstance().getPackageName() + "/" + AbsApplication.getInstance().VERSION+" " + "/" + AbsApplication.getInstance().getAppChannelMetaDataForTask() + "/ " +"Mozilla/5.0(Linux;U;Android "+ Build.VERSION.RELEASE +";"+ Locale.getDefault().getLanguage() + "-"+ Locale.getDefault().getCountry() +";"+Build.BRAND + " "+Build.MODEL+ "/"+Build.DISPLAY + ")");
+			HttpProtocolParams.setUserAgent(params, AbsApplication.getInstance().getPackageName() + "/" + "android_" + AbsApplication.getInstance().VERSION+" " + "/" + AbsApplication.getInstance().getAppChannelMetaDataForTask() + "/ " +"Mozilla/5.0(Linux;U;Android "+ Build.VERSION.RELEASE +";"+ Locale.getDefault().getLanguage() + "-"+ Locale.getDefault().getCountry() +";"+Build.BRAND + " "+Build.MODEL+ "/"+Build.DISPLAY + ")");
 			//修改org.apache.http的主机名验证
 			try {
 				KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());

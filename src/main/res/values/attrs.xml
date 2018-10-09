@@ -2,9 +2,9 @@
 <resources>
 
     <!--<declare-styleable name="recycler_swipe_SwipeMenuLayout">-->
-        <!--<attr name="leftViewId" format="reference"/>-->
-        <!--<attr name="rightViewId" format="reference"/>-->
-        <!--<attr name="contentViewId" format="reference"/>-->
+    <!--<attr name="leftViewId" format="reference"/>-->
+    <!--<attr name="rightViewId" format="reference"/>-->
+    <!--<attr name="contentViewId" format="reference"/>-->
     <!--</declare-styleable>-->
 
     <declare-styleable name="CircleImageView">
@@ -30,33 +30,45 @@
         <!--该属性表示里面的TAB是否均分整个PagerSlidingTabStrip控件的宽,true是,false不均分,从左到右排列,默认false-->
         <attr name="pstsShouldExpand" format="boolean" />
         <attr name="pstsTextAllCaps" format="boolean" />
-        <attr name="pstsTextSelectedColor" format="color"/>
+        <attr name="pstsTextSelectedColor" format="color" />
         <!--缩放的最大值,0.3表示放大后最大是原来的0.3倍,默认未0.3-->
-        <attr name="pstsScaleZoomMax" format="float"/>
-        <attr name="pstsSmoothScrollWhenClickTab" format="boolean"/>
+        <attr name="pstsScaleZoomMax" format="float" />
+        <attr name="pstsSmoothScrollWhenClickTab" format="boolean" />
         <!-- 宽为match_parent ，指示器的宽需手动计算的问题,这个属性设置为true,则指示器的位置和字体的宽一样-->
         <!--    <attr name="pstsIndicatorWrap" format="boolean" />-->
     </declare-styleable>
 
 
     <declare-styleable name="ColorSizeTrackView">
-        <attr name="cstvText" format="string"/>
-        <attr name="cstvText_size" format="dimension"/>
-        <attr name="cstvText_origin_color" format="color"/>
-        <attr name="cstvText_change_color" format="color"/>
-        <attr name="cstvProgress" format="float"/>
-        <attr name="cstvDirection" format="integer"/>
+        <attr name="cstvText" format="string" />
+        <attr name="cstvText_size" format="dimension" />
+        <attr name="cstvText_origin_color" format="color" />
+        <attr name="cstvText_change_color" format="color" />
+        <attr name="cstvProgress" format="float" />
+        <attr name="cstvDirection" format="integer" />
     </declare-styleable>
 
     <declare-styleable name="recycler_swipe_SwipeMenuLayout">
-        <attr name="leftViewId" format="reference"/>
-        <attr name="rightViewId" format="reference"/>
-        <attr name="contentViewId" format="reference"/>
+        <attr name="leftViewId" format="reference" />
+        <attr name="rightViewId" format="reference" />
+        <attr name="contentViewId" format="reference" />
     </declare-styleable>
 
     <declare-styleable name="Ariel_IndicatorViewPager">
-        <attr name="is_loop" format="boolean"/>
-        <attr name="play_time_seconds" format="integer"/>
+        <attr name="is_loop" format="boolean" />
+        <attr name="play_time_seconds" format="integer" />
+    </declare-styleable>
+
+    <declare-styleable name="ZxingInnerrect">
+        <attr name="zxing_inner_width" format="dimension" />
+        <attr name="zxing_inner_height" format="dimension" />
+        <attr name="zxing_inner_margintop" format="dimension" />
+        <attr name="zxing_inner_corner_color" format="color" />
+        <attr name="zxing_inner_corner_length" format="dimension" />
+        <attr name="zxing_inner_corner_width" format="dimension" />
+        <attr name="zxing_inner_scan_bitmap" format="reference" />
+        <attr name="zxing_inner_scan_speed" format="integer" />
+        <attr name="zxing_inner_scan_iscircle" format="boolean" />
     </declare-styleable>
 
 

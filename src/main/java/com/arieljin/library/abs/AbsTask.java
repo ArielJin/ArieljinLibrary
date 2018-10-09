@@ -39,16 +39,12 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
-//import org.codehaus.jackson.map.ObjectMapper;
-
 
 public abstract class AbsTask<T extends Serializable> implements Runnable {
     public AbsRequest request;
     protected MyThread<T> thread;
     private volatile Set<OnTaskCompleteListener<T>> /*onTaskPostCompleteListeners, */onTaskCompleteListeners;
     protected WeakReference<Context> weakReference;
-//    protected ObjectMapper mObjectMapper = null;
-
     private int progressY;
 //    public int circleProgressY = 200;
 
@@ -248,7 +244,7 @@ public abstract class AbsTask<T extends Serializable> implements Runnable {
 
         try {
             showDialog();
-            T t = ThreadPoolManager.httpSubmit(thread = new MyThread<T>(this)).get();
+            T t = ThreadPoolManager.httpSubmit(thread = new MyThread<>(this)).get();
 
             if (weakReference.get() instanceof Activity && !((Activity) weakReference.get()).isFinishing())
                 ((Activity) weakReference.get()).runOnUiThread(new Runnable() {
