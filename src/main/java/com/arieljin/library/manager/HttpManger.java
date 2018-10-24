@@ -21,6 +21,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.params.ClientPNames;
 import org.apache.http.conn.params.ConnManagerParams;
+import org.apache.http.conn.params.ConnPerRouteBean;
 import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
@@ -103,6 +104,12 @@ public final class HttpManger {
 
 			/* 从连接池中取连接的超时时间 */
 			ConnManagerParams.setTimeout(params, 5000);
+// 设置最大连接数
+			ConnManagerParams.setMaxTotalConnections(params, 800);
+			// 设置每个路由最大连接数
+			ConnPerRouteBean connPerRoute = new ConnPerRouteBean(400);
+			ConnManagerParams.setMaxConnectionsPerRoute(params, connPerRoute);
+
 			/* 连接超时 */
 			HttpConnectionParams.setConnectionTimeout(params, 10000);
 			/* 请求超时 */
@@ -274,6 +281,7 @@ public final class HttpManger {
 		if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
 			// saveCookie(httpClient.getCookieStore());
 		} else {
+			request.abort();
 			Log.e("arieljin", "Error Response: " + response.getStatusLine().toString() + ": " + url);
 		}
 
