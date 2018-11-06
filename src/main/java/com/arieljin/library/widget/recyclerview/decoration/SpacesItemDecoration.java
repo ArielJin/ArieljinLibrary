@@ -32,6 +32,10 @@ public class SpacesItemDecoration extends RecyclerView.ItemDecoration {
             outRect.right = builder.spaces.right;
         if (builder.spaces.bottom > 0)
             outRect.bottom = builder.spaces.bottom;
+        if (builder.spaces.recyclerTop > 0 && parent.getChildAdapterPosition(view) == 0) {
+
+            outRect.top = builder.spaces.recyclerTop;
+        }
 
     }
 
@@ -67,6 +71,12 @@ public class SpacesItemDecoration extends RecyclerView.ItemDecoration {
             return this;
         }
 
+        public SpacesItemDecoration.Builder setRecyclerTop(int recyclerTop){
+
+            spaces.recyclerTop = recyclerTop;
+            return this;
+        }
+
 
         public SpacesItemDecoration create(){
 
@@ -83,6 +93,7 @@ public class SpacesItemDecoration extends RecyclerView.ItemDecoration {
         public int bottom;
         public int left;
         public int right;
+        public int recyclerTop;
 
         private Spaces() {
         }

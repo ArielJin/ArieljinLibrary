@@ -47,7 +47,9 @@ public class BasePagerAdapter<T> extends AbsPagerAdapter {
             views.remove(view);
         }
 
-        render.initDate(view, getItem(position));
+        T t = getItem(position);
+        if (t != null)
+            render.initDate(view, t);
 
         container.addView(view);
         return view;
@@ -62,7 +64,7 @@ public class BasePagerAdapter<T> extends AbsPagerAdapter {
     }
 
     public T getItem(int position) {
-        if (list != null) {
+        if (list != null && !list.isEmpty()) {
             return list.get(position);
         }
         return null;

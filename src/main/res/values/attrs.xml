@@ -57,6 +57,7 @@
     <declare-styleable name="Ariel_IndicatorViewPager">
         <attr name="is_loop" format="boolean" />
         <attr name="play_time_seconds" format="integer" />
+        <attr name="bg_placeholder" format="reference"/>
     </declare-styleable>
 
     <declare-styleable name="ZxingInnerrect">

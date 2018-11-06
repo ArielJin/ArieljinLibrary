@@ -1,19 +1,18 @@
-package com.arieljin.library.widget.adapter;
+package com.arieljin.library.widget;
 
 import android.os.Parcelable;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.PagerAdapter;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.List;
+import com.arieljin.library.widget.adapter.BasePagerAdapter;
 
-/**
- * @time 2018/8/22.
- * @email ariel.jin@tom.com
- */
-public class LoopPagerAdapterWrapper extends BasePagerAdapter {
+public class LoopPagerAdapterWrapper extends PagerAdapter {
 
-    private BasePagerAdapter mAdapter;
+    private PagerAdapter mAdapter;
 
     private SparseArray<ToDestroy> mToDestroy = new SparseArray<>();
 
@@ -23,16 +22,15 @@ public class LoopPagerAdapterWrapper extends BasePagerAdapter {
     private boolean mBoundaryCaching = DEFAULT_BOUNDARY_CASHING;
     private boolean mBoundaryLooping = DEFAULT_BOUNDARY_LOOPING;
 
-    public void setBoundaryCaching(boolean flag) {
+    void setBoundaryCaching(boolean flag) {
         mBoundaryCaching = flag;
     }
 
-    public void setBoundaryLooping(boolean flag) {
+    void setBoundaryLooping(boolean flag) {
         mBoundaryLooping = flag;
     }
 
-    public LoopPagerAdapterWrapper(BasePagerAdapter adapter) {
-        super(adapter.list, adapter.render);
+    LoopPagerAdapterWrapper(BasePagerAdapter adapter) {
         this.mAdapter = adapter;
     }
 
@@ -42,7 +40,7 @@ public class LoopPagerAdapterWrapper extends BasePagerAdapter {
         super.notifyDataSetChanged();
     }
 
-    public int toRealPosition(int position) {
+    int toRealPosition(int position) {
         int realPosition = position;
         int realCount = getRealCount();
         if (realCount == 0)
@@ -76,24 +74,17 @@ public class LoopPagerAdapterWrapper extends BasePagerAdapter {
     }
 
     public int getRealCount() {
-        return mAdapter != null ? mAdapter.getCount() : 0;
+        return mAdapter.getCount();
     }
 
-    public BasePagerAdapter getRealAdapter() {
+    public PagerAdapter getRealAdapter() {
         return mAdapter;
-    }
-
-    public void setAdapterList(List list) {
-
-        if (mAdapter != null)
-            mAdapter.setList(list);
-        notifyDataSetChanged();
-
     }
 
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
-        int realPosition = toRealPosition(position);
+        int realPosition = (mAdapter instanceof FragmentPagerAdapter || mAdapter instanceof FragmentStatePagerAdapter)
+                ? position : toRealPosition(position);
 
         if (mBoundaryCaching) {
             ToDestroy toDestroy = mToDestroy.get(position);
@@ -102,20 +93,20 @@ public class LoopPagerAdapterWrapper extends BasePagerAdapter {
                 return toDestroy.object;
             }
         }
-        return mAdapter != null ? mAdapter.instantiateItem(container, realPosition) : null;
+        return mAdapter.instantiateItem(container, realPosition);
     }
 
     @Override
     public void destroyItem(ViewGroup container, int position, Object object) {
         int realFirst = getRealFirstPosition();
         int realLast = getRealLastPosition();
-        int realPosition = toRealPosition(position);
+        int realPosition = (mAdapter instanceof FragmentPagerAdapter || mAdapter instanceof FragmentStatePagerAdapter)
+                ? position : toRealPosition(position);
 
         if (mBoundaryCaching && (position == realFirst || position == realLast)) {
             mToDestroy.put(position, new ToDestroy(container, realPosition, object));
         } else {
-            if (mAdapter != null)
-                mAdapter.destroyItem(container, realPosition, object);
+            mAdapter.destroyItem(container, realPosition, object);
         }
     }
 
@@ -125,40 +116,32 @@ public class LoopPagerAdapterWrapper extends BasePagerAdapter {
 
     @Override
     public void finishUpdate(ViewGroup container) {
-        if (mAdapter != null)
-            mAdapter.finishUpdate(container);
+        mAdapter.finishUpdate(container);
     }
 
     @Override
     public boolean isViewFromObject(View view, Object object) {
-        if (mAdapter != null)
-            return mAdapter.isViewFromObject(view, object);
-        return false;
+        return mAdapter.isViewFromObject(view, object);
     }
 
     @Override
     public void restoreState(Parcelable bundle, ClassLoader classLoader) {
-        if (mAdapter != null)
-            mAdapter.restoreState(bundle, classLoader);
+        mAdapter.restoreState(bundle, classLoader);
     }
 
     @Override
     public Parcelable saveState() {
-        if (mAdapter != null)
-            return mAdapter.saveState();
-        return null;
+        return mAdapter.saveState();
     }
 
     @Override
     public void startUpdate(ViewGroup container) {
-        if (mAdapter != null)
-            mAdapter.startUpdate(container);
+        mAdapter.startUpdate(container);
     }
 
     @Override
     public void setPrimaryItem(ViewGroup container, int position, Object object) {
-        if (mAdapter != null)
-            mAdapter.setPrimaryItem(container, position, object);
+        mAdapter.setPrimaryItem(container, position, object);
     }
 
     /*
@@ -179,5 +162,6 @@ public class LoopPagerAdapterWrapper extends BasePagerAdapter {
             this.object = object;
         }
     }
-
 }
+
+

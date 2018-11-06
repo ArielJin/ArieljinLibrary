@@ -10,7 +10,10 @@ import android.graphics.drawable.StateListDrawable;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.DrawableRes;
+import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
+import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.ViewGroup;
@@ -34,9 +37,12 @@ public class IndicatorViewPager extends ConstraintLayout implements ViewPager.On
     private RadioGroup indicatorGroup;
     private boolean isLoop = false;
 
-    private static boolean autoPlay = false;
+    private boolean autoPlay = false;
 
-    private static int time = 0;
+    private int time = 0;
+
+    private @DrawableRes
+    int bg_placeholder = 0;
 
     @SuppressLint("HandlerLeak")
     private Handler handler = new Handler() {
@@ -50,7 +56,11 @@ public class IndicatorViewPager extends ConstraintLayout implements ViewPager.On
     private Runnable runnable = new Runnable() {
         @Override
         public void run() {
-            viewPager.setCurrentItem(viewPager.getCurrentItem() + 1,true);
+            if (isLoop)
+                viewPager.setCurrentItem(viewPager.getCurrentItem() + 1, true);
+            else
+                viewPager.setCurrentItem(viewPager.getCurrentItem() == viewPager.getAdapter().getCount() - 1 ? 0 : viewPager.getCurrentItem() + 1, true);
+
         }
     };
 
@@ -68,6 +78,8 @@ public class IndicatorViewPager extends ConstraintLayout implements ViewPager.On
 
     public void play() {
 
+        if (viewPager.getAdapter() == null)
+            return;
         if (autoPlay) {
             handler.postDelayed(runnable, time);
         } else {
@@ -82,8 +94,8 @@ public class IndicatorViewPager extends ConstraintLayout implements ViewPager.On
     }
 
     public void setAutoPlay(int seconds) {
-        IndicatorViewPager.time = seconds * 1000;
-        IndicatorViewPager.autoPlay = IndicatorViewPager.time > 0;
+        this.time = seconds * 1000;
+        this.autoPlay = this.time > 0;
         if (!autoPlay) {
             handler.removeCallbacks(runnable);
         }
@@ -106,7 +118,9 @@ public class IndicatorViewPager extends ConstraintLayout implements ViewPager.On
         if (a.hasValue(R.styleable.Ariel_IndicatorViewPager_play_time_seconds)) {
             time = a.getInteger(R.styleable.Ariel_IndicatorViewPager_play_time_seconds, 0) * 1000;
             autoPlay = time > 0;
-
+        }
+        if (a.hasValue(R.styleable.Ariel_IndicatorViewPager_bg_placeholder)) {
+            bg_placeholder = a.getResourceId(R.styleable.Ariel_IndicatorViewPager_bg_placeholder, bg_placeholder);
         }
         init();
     }
@@ -133,55 +147,40 @@ public class IndicatorViewPager extends ConstraintLayout implements ViewPager.On
         addView(indicatorGroup);
     }
 
-    public void setAdapter(final BasePagerAdapter adapter) {
+    public void setAdapter(@NonNull BasePagerAdapter adapter) {
 
-        if (adapter == null)
-            throw new NullPointerException("adapter not null!");
+        if (isLoop)
+            ((LoopViewPager) viewPager).setBoundaryLooping(adapter.getCount() > 1);
+        viewPager.setAdapter(adapter);
+        invalidateViews(adapter.getCount());
+        if (adapter.getCount() > 1)
+            play();
 
-        invalidateViews(adapter.getCount(), new OnPagerItemCountChangeListener() {
-            @Override
-            public void onPagerItemCountChanged() {
-                viewPager.setAdapter(adapter);
+    }
 
+
+    public void setList(List list) {
+        cancel();
+        if (viewPager.getAdapter() != null) {
+            PagerAdapter adapter = viewPager.getAdapter();
+            if (adapter instanceof BasePagerAdapter) {
+                if (isLoop) {
+                    ((LoopViewPager) viewPager).setBoundaryLooping(list != null && list.size() > 1);
+                    ((LoopViewPager) viewPager).setList(list);
+                } else {
+                    ((BasePagerAdapter) adapter).setList(list);
+                }
             }
-        });
 
+        }
 
+        invalidateViews(list != null && !list.isEmpty() ? list.size() : 0);
+        if (list != null && list.size() > 1) {
+            play();
+        }
     }
 
-
-    public void setAdapterList(final List list) {
-
-        invalidateViews(list.size(), new OnPagerItemCountChangeListener() {
-            @Override
-            public void onPagerItemCountChanged() {
-                if (viewPager instanceof LoopViewPager)
-                    ((LoopViewPager) viewPager).setAdapterList(list,isLoop);
-                else
-                    ((BasePagerAdapter)viewPager.getAdapter()).setList(list);
-                play();
-            }
-        });
-
-//        if (viewPager.getAdapter() == null)
-//            throw new NullPointerException("adapter not null!");
-//        if ((list != null && list.size() == indicatorGroup.getChildCount()) || (list == null && indicatorGroup.getChildCount() == 0))
-//            ((BasePagerAdapter) viewPager.getAdapter()).setList(list);
-//        invalidateViews(list != null ? list.size() : 0, new OnPagerItemCountChangeListener() {
-//            @Override
-//            public void onPagerItemCountChanged() {
-//                ((BasePagerAdapter) viewPager.getAdapter()).setList(list);
-//            }
-//        });
-
-    }
-
-
-    private interface OnPagerItemCountChangeListener {
-        void onPagerItemCountChanged();
-    }
-
-    private void invalidateViews(int itemCount, OnPagerItemCountChangeListener onPagerItemCountChangeListener) {
+    private void invalidateViews(int itemCount) {
 
         if (itemCount > 0) {
 
@@ -200,20 +199,13 @@ public class IndicatorViewPager extends ConstraintLayout implements ViewPager.On
 
             }
 
-            if (onPagerItemCountChangeListener != null) {
-                onPagerItemCountChangeListener.onPagerItemCountChanged();
-            }
-
-
-            setVisibility(VISIBLE);
 
         } else {
 
-            if (onPagerItemCountChangeListener != null) {
-                onPagerItemCountChangeListener.onPagerItemCountChanged();
-            }
             indicatorGroup.removeAllViews();
-            setVisibility(GONE);
+            indicatorGroup.setVisibility(GONE);
+            if (bg_placeholder != 0)
+                viewPager.setBackgroundResource(bg_placeholder);
 
         }
 
@@ -236,7 +228,6 @@ public class IndicatorViewPager extends ConstraintLayout implements ViewPager.On
     public void onPageScrollStateChanged(int state) {
 
         if (state == ViewPager.SCROLL_STATE_IDLE) {
-//            viewPager.setCurrentItem(viewPager.getCurrentItem(), false);
             play();
         } else if (state == ViewPager.SCROLL_STATE_DRAGGING) {
             cancel();
@@ -317,4 +308,5 @@ public class IndicatorViewPager extends ConstraintLayout implements ViewPager.On
 
         }
     }
+
 }

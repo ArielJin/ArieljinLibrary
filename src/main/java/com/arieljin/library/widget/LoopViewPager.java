@@ -1,22 +1,17 @@
 package com.arieljin.library.widget;
 
+
 import android.content.Context;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 
 import com.arieljin.library.widget.adapter.BasePagerAdapter;
-import com.arieljin.library.widget.adapter.LoopPagerAdapterWrapper;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @time 2018/8/22.
- * @email ariel.jin@tom.com
- */
 public class LoopViewPager extends ViewPager {
-
     private static final boolean DEFAULT_BOUNDARY_CASHING = false;
     private static final boolean DEFAULT_BOUNDARY_LOOPING = true;
 
@@ -28,7 +23,7 @@ public class LoopViewPager extends ViewPager {
     /**
      * helper function which may be used when implementing FragmentPagerAdapter
      *
-     * @return (position-1)%count
+     * @return (position - 1)%count
      */
     public static int toRealPosition(int position, int count) {
         position = position - 1;
@@ -60,41 +55,45 @@ public class LoopViewPager extends ViewPager {
 
     @Override
     public void setAdapter(PagerAdapter adapter) {
-//        if (!(adapter instanceof AbsPagerAdapter))
-//            throw new IllegalStateException("adapter must be extend AbsPagerAdapter !");
-        mAdapter = new LoopPagerAdapterWrapper((BasePagerAdapter) adapter);
-        mBoundaryLooping = adapter != null?mBoundaryLooping && adapter.getCount() > 1:mBoundaryLooping;
-        mAdapter.setBoundaryCaching(mBoundaryCaching);
-        mAdapter.setBoundaryLooping(mBoundaryLooping);
-        super.setAdapter(mAdapter);
-        setCurrentItem(0, false);
+
+        if (adapter instanceof BasePagerAdapter) {
+            mAdapter = new LoopPagerAdapterWrapper((BasePagerAdapter) adapter);
+            mAdapter.setBoundaryCaching(mBoundaryCaching);
+            mAdapter.setBoundaryLooping(mBoundaryLooping);
+            super.setAdapter(mAdapter);
+            setCurrentItem(0, false);
+        }
+
     }
 
     @Override
     public PagerAdapter getAdapter() {
-        return mAdapter != null ? mAdapter.getRealAdapter() : null;
+        return mAdapter != null ? mAdapter.getRealAdapter() : mAdapter;
     }
 
-    public void setAdapterList(List list, boolean isBoundaryLooping) {
-        setBoundaryLooping(isBoundaryLooping && list.size() > 1);
-        mAdapter.setAdapterList(list);
-        setCurrentItem(0,false);
+    public void setList(List list){
+        if (mAdapter != null) {
+            PagerAdapter adapter = mAdapter.getRealAdapter();
+            if (adapter instanceof BasePagerAdapter) {
+                ((BasePagerAdapter) adapter).setList(list);
+                super.setAdapter(mAdapter);
+                setCurrentItem(0, false);
+            }
+        }
     }
 
     @Override
-    public synchronized int getCurrentItem() {
+    public int getCurrentItem() {
         return mAdapter != null ? mAdapter.toRealPosition(super.getCurrentItem()) : 0;
     }
 
-    public synchronized void setCurrentItem(int item, boolean smoothScroll) {
-        if (mAdapter == null)
-            return;
+    public void setCurrentItem(int item, boolean smoothScroll) {
         int realItem = mAdapter.toInnerPosition(item);
         super.setCurrentItem(realItem, smoothScroll);
     }
 
     @Override
-    public synchronized void setCurrentItem(int item) {
+    public void setCurrentItem(int item) {
         if (getCurrentItem() != item) {
             setCurrentItem(item, true);
         }
@@ -217,7 +216,5 @@ public class LoopViewPager extends ViewPager {
                 }
             }
         }
-
     };
-
 }
