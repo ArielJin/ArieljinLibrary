@@ -1,5 +1,6 @@
 package com.arieljin.library.abs;
 
+import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -19,6 +20,7 @@ public class AbsActivity extends AppCompatActivity implements ActivityInterface 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT); // 禁用横屏
         AbsActivityManager.onCreate(this);
         initWindowsStatusBar(setStatusBarColor());
         new ActivityInterface.MyThread(this, true).start();
@@ -116,11 +118,11 @@ public class AbsActivity extends AppCompatActivity implements ActivityInterface 
 //
 //    }
 
-    protected void initView(){
+    protected void initView() {
 
     }
 
-    protected void initData(){
+    protected void initData() {
 
     }
 

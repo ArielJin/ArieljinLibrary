@@ -6,8 +6,6 @@ import android.widget.LinearLayout;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @time 2018/8/13.
@@ -30,7 +28,8 @@ public class SwipeMenu {
 
     private int orientation = HORIZONTAL;
 
-    private List<SwipeMenuItem> mSwipeMenuItems = new ArrayList<>(2);
+//    private List<SwipeMenuItem> mSwipeMenuItems = new ArrayList<>(2);
+    private SwipeMenuItem swipeMenuItem = null;
 
     public SwipeMenu(SwipeMenuLayout swipeMenuLayout, int viewType) {
         this.mSwipeMenuLayout = swipeMenuLayout;
@@ -81,20 +80,34 @@ public class SwipeMenu {
         return orientation;
     }
 
-    public void addMenuItem(SwipeMenuItem item) {
-        mSwipeMenuItems.add(item);
+//    public void addMenuItem(SwipeMenuItem item) {
+//        mSwipeMenuItems.add(item);
+//    }
+//
+//    public void removeMenuItem(SwipeMenuItem item) {
+//        mSwipeMenuItems.remove(item);
+//    }
+
+
+    public void setSwipeMenuItem(SwipeMenuItem swipeMenuItem) {
+        this.swipeMenuItem = swipeMenuItem;
     }
 
-    public void removeMenuItem(SwipeMenuItem item) {
-        mSwipeMenuItems.remove(item);
+//    public List<SwipeMenuItem> getMenuItems() {
+//        return mSwipeMenuItems;
+//    }
+
+
+    public SwipeMenuItem getSwipeMenuItem() {
+        return swipeMenuItem;
     }
 
-    public List<SwipeMenuItem> getMenuItems() {
-        return mSwipeMenuItems;
-    }
+//    public SwipeMenuItem getMenuItem(int index) {
+//        return mSwipeMenuItems.get(index);
+//    }
 
-    public SwipeMenuItem getMenuItem(int index) {
-        return mSwipeMenuItems.get(index);
+    public void smoothCloseRightMenu(){
+        mSwipeMenuLayout.smoothCloseRightMenu();
     }
 
     public Context getContext() {

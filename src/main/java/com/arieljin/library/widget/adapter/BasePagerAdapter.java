@@ -24,6 +24,10 @@ public class BasePagerAdapter<T> extends AbsPagerAdapter {
         notifyDataSetChanged();
     }
 
+    public List<T> getList() {
+        return list;
+    }
+
     public BasePagerAdapter(List<T> list, AdapterRender<T> render) {
         this.list = list;
         this.render = render;

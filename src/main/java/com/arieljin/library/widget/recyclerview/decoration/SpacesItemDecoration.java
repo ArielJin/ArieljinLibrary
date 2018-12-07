@@ -39,6 +39,10 @@ public class SpacesItemDecoration extends RecyclerView.ItemDecoration {
 
     }
 
+    public Builder getBuilder() {
+        return builder;
+    }
+
     public static class Builder {
 
         private Spaces spaces;

@@ -15,10 +15,8 @@ import android.view.ViewGroup;
 import android.view.ViewParent;
 
 import com.arieljin.library.R;
-import com.arieljin.library.widget.recyclerview.swipe.OnSwipeMenuItemClickListener;
 import com.arieljin.library.widget.recyclerview.swipe.SwipeMenu;
 import com.arieljin.library.widget.recyclerview.swipe.SwipeMenuCreator;
-import com.arieljin.library.widget.recyclerview.swipe.SwipeMenuDirection;
 import com.arieljin.library.widget.recyclerview.swipe.SwipeMenuLayout;
 import com.arieljin.library.widget.recyclerview.swipe.SwipeMenuView;
 
@@ -33,7 +31,7 @@ public class AdRecyclerView extends RecyclerView {
     private SwipeMenuCreator mSwipeMenuCreator;
 
     protected SwipeMenuLayout mOldSwipedLayout;
-    private OnSwipeMenuItemClickListener mSwipeMenuItemClickListener;
+//    private OnSwipeMenuItemClickListener mSwipeMenuItemClickListener;
 
     private int mDownX;
     private int mDownY;
@@ -71,34 +69,33 @@ public class AdRecyclerView extends RecyclerView {
         mFooterViewList.add(view);
     }
 
-    private SwipeMenuCreator mDefaultMenuCreator = new SwipeMenuCreator() {
-        @Override
-        public void onCreateMenu(SwipeMenu swipeLeftMenu, SwipeMenu swipeRightMenu, int viewType) {
-            if (mSwipeMenuCreator != null) {
-                mSwipeMenuCreator.onCreateMenu(swipeLeftMenu, swipeRightMenu, viewType);
-            }
-        }
-    };
+//    private SwipeMenuCreator mDefaultMenuCreator = new SwipeMenuCreator() {
+//        @Override
+//        public void onCreateMenu(SwipeMenu swipeLeftMenu, SwipeMenu swipeRightMenu, int viewType) {
+//            if (mSwipeMenuCreator != null) {
+//                mSwipeMenuCreator.onCreateMenu(swipeLeftMenu, swipeRightMenu, viewType);
+//            }
+//        }
+//    };
 
     /**
      * Default swipe menu item click listener.
      */
-    private OnSwipeMenuItemClickListener mDefaultMenuItemClickListener = new OnSwipeMenuItemClickListener() {
+//    private OnSwipeMenuItemClickListener mDefaultMenuItemClickListener = new OnSwipeMenuItemClickListener() {
+//
+//        @Override
+//        public void onItemClick(View view, int mAdapterPosition, int index) {
+//            if (mSwipeMenuItemClickListener != null) {
+//                int position = mAdapterPosition - getHeaderItemCount();
+//                if (position > 0)
+//                    mSwipeMenuItemClickListener.onItemClick(view, position, index);
+//            }
+//        }
+//    };
 
-        @Override
-        public void onItemClick(View view, int mAdapterPosition, int index) {
-            if (mSwipeMenuItemClickListener != null) {
-                int position = mAdapterPosition - getHeaderItemCount();
-                if (position > 0)
-                    mSwipeMenuItemClickListener.onItemClick(view, position, index);
-            }
-        }
-    };
-
-    public void setOnSwipeMenuItemClickListener(OnSwipeMenuItemClickListener mSwipeMenuItemClickListener) {
-        this.mSwipeMenuItemClickListener = mSwipeMenuItemClickListener;
-    }
-
+//    public void setOnSwipeMenuItemClickListener(OnSwipeMenuItemClickListener mSwipeMenuItemClickListener) {
+//        this.mSwipeMenuItemClickListener = mSwipeMenuItemClickListener;
+//    }
     @Override
     public void setAdapter(Adapter adapter) {
         if (mAdapterWrapper != null) {
@@ -113,8 +110,9 @@ public class AdRecyclerView extends RecyclerView {
         adapter.registerAdapterDataObserver(mAdapterDataObserver);
 
         mAdapterWrapper = new AdapterWrapper(adapter);
-        mAdapterWrapper.setSwipeMenuCreator(mDefaultMenuCreator);
-        mAdapterWrapper.setOnSwipeMenuItemClickListener(mDefaultMenuItemClickListener);
+        if (mSwipeMenuCreator != null)
+            mAdapterWrapper.setSwipeMenuCreator(mSwipeMenuCreator);
+//        mAdapterWrapper.setOnSwipeMenuItemClickListener(mDefaultMenuItemClickListener);
         super.setAdapter(mAdapterWrapper);
 
         if (mHeaderViewList.size() > 0)
@@ -129,6 +127,8 @@ public class AdRecyclerView extends RecyclerView {
 
     public void setSwipeMenuCreator(SwipeMenuCreator mSwipeMenuCreator) {
         this.mSwipeMenuCreator = mSwipeMenuCreator;
+        if (mAdapterWrapper != null)
+            mAdapterWrapper.setSwipeMenuCreator(mSwipeMenuCreator);
     }
 
 
@@ -302,7 +302,7 @@ public class AdRecyclerView extends RecyclerView {
 
 
         private SwipeMenuCreator mSwipeMenuCreator;
-        private OnSwipeMenuItemClickListener mSwipeMenuItemClickListener;
+//        private OnSwipeMenuItemClickListener mSwipeMenuItemClickListener;
 
         AdapterWrapper(RecyclerView.Adapter adapter) {
             mAdapter = adapter;
@@ -342,31 +342,37 @@ public class AdRecyclerView extends RecyclerView {
             } else if (mFootViews.get(viewType) != null) {
                 return new ViewHolder(mFootViews.get(viewType));
             }
-            final RecyclerView.ViewHolder viewHolder = mAdapter.onCreateViewHolder(parent, viewType);
+            RecyclerView.ViewHolder viewHolder = mAdapter.onCreateViewHolder(parent, viewType);
 
-            SwipeMenuLayout swipeMenuLayout = (SwipeMenuLayout) LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.recycler_swipe_view_item, parent, false);
+            if (mSwipeMenuCreator != null) {
 
-            SwipeMenu swipeLeftMenu = new SwipeMenu(swipeMenuLayout, viewType);
-            SwipeMenu swipeRightMenu = new SwipeMenu(swipeMenuLayout, viewType);
+                SwipeMenuLayout swipeMenuLayout = (SwipeMenuLayout) LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.recycler_swipe_view_item, parent, false);
 
-            mSwipeMenuCreator.onCreateMenu(swipeLeftMenu, swipeRightMenu, viewType);
+                SwipeMenu swipeLeftMenu = new SwipeMenu(swipeMenuLayout, viewType);
+                SwipeMenu swipeRightMenu = new SwipeMenu(swipeMenuLayout, viewType);
 
-            int leftMenuCount = swipeLeftMenu.getMenuItems().size();
-            if (leftMenuCount > 0) {
-                SwipeMenuView swipeLeftMenuView = (SwipeMenuView) swipeMenuLayout.findViewById(R.id.swipe_left);
-                // noinspection WrongConstant
-                swipeLeftMenuView.setOrientation(swipeLeftMenu.getOrientation());
-                swipeLeftMenuView.createMenu(swipeLeftMenu, swipeMenuLayout, mSwipeMenuItemClickListener, SwipeMenuDirection.LEFT_DIRECTION);
-            }
+                mSwipeMenuCreator.onCreateMenu(swipeLeftMenu, swipeRightMenu, viewType);
 
-            int rightMenuCount = swipeRightMenu.getMenuItems().size();
-            if (rightMenuCount > 0) {
-                SwipeMenuView swipeRightMenuView = (SwipeMenuView) swipeMenuLayout.findViewById(R.id.swipe_right);
-                // noinspection WrongConstant
-                swipeRightMenuView.setOrientation(swipeRightMenu.getOrientation());
-                swipeRightMenuView.createMenu(swipeRightMenu, swipeMenuLayout, mSwipeMenuItemClickListener, SwipeMenuDirection.RIGHT_DIRECTION);
-            }
+//                int leftMenuCount = swipeLeftMenu.getMenuItems().size();
+
+                boolean needFieldReplaceItem = false;
+                if (swipeLeftMenu.getSwipeMenuItem() != null) {
+                    SwipeMenuView swipeLeftMenuView = swipeMenuLayout.findViewById(R.id.swipe_left);
+                    // noinspection WrongConstant
+                    swipeLeftMenuView.setOrientation(swipeLeftMenu.getOrientation());
+                    swipeLeftMenuView.createMenu(swipeLeftMenu, swipeMenuLayout/*, mSwipeMenuItemClickListener, SwipeMenuDirection.LEFT_DIRECTION*/);
+                    needFieldReplaceItem = true;
+                }
+
+//                int rightMenuCount = swipeRightMenu.getMenuItems().size();
+                if (swipeRightMenu.getSwipeMenuItem() != null) {
+                    SwipeMenuView swipeRightMenuView = swipeMenuLayout.findViewById(R.id.swipe_right);
+                    // noinspection WrongConstant
+                    swipeRightMenuView.setOrientation(swipeRightMenu.getOrientation());
+                    swipeRightMenuView.createMenu(swipeRightMenu, swipeMenuLayout/*, mSwipeMenuItemClickListener, SwipeMenuDirection.RIGHT_DIRECTION*/);
+                    needFieldReplaceItem = true;
+                }
 
 //            viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
 //                @Override
@@ -375,17 +381,19 @@ public class AdRecyclerView extends RecyclerView {
 //                }
 //            });
 
-            if (leftMenuCount > 0 || rightMenuCount > 0) {
+                if (needFieldReplaceItem) {
 
-                ViewGroup viewGroup = (ViewGroup) swipeMenuLayout.findViewById(R.id.swipe_content);
-                viewGroup.addView(viewHolder.itemView);
-
-                try {
-                    Field itemView = getSupperClass(viewHolder.getClass()).getDeclaredField("itemView");
-                    if (!itemView.isAccessible()) itemView.setAccessible(true);
-                    itemView.set(viewHolder, swipeMenuLayout);
-                } catch (Exception e) {
-                    e.printStackTrace();
+                    ViewGroup viewGroup = swipeMenuLayout.findViewById(R.id.swipe_content);
+                    viewGroup.addView(viewHolder.itemView);
+                    if (viewHolder.itemView.getTag(R.id.ariel_recycler_render_item) != null)
+                        swipeMenuLayout.setTag(R.id.ariel_recycler_render_item, viewHolder.itemView.getTag(R.id.ariel_recycler_render_item));
+                    try {
+                        Field itemView = getSupperClass(viewHolder.getClass()).getDeclaredField("itemView");
+                        if (!itemView.isAccessible()) itemView.setAccessible(true);
+                        itemView.set(viewHolder, swipeMenuLayout);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             }
 
@@ -410,7 +418,7 @@ public class AdRecyclerView extends RecyclerView {
                 for (int i = 0; i < childCount; i++) {
                     View childView = swipeMenuLayout.getChildAt(i);
                     if (childView instanceof SwipeMenuView) {
-                        ((SwipeMenuView) childView).bindViewHolder(holder);
+                        ((SwipeMenuView) childView).bindViewPosition(position - getHeaderItemCount());
                     }
                 }
             }
@@ -469,9 +477,9 @@ public class AdRecyclerView extends RecyclerView {
             return aClass;
         }
 
-        public void setOnSwipeMenuItemClickListener(OnSwipeMenuItemClickListener mSwipeMenuItemClickListener) {
-            this.mSwipeMenuItemClickListener = mSwipeMenuItemClickListener;
-        }
+//        public void setOnSwipeMenuItemClickListener(OnSwipeMenuItemClickListener mSwipeMenuItemClickListener) {
+//            this.mSwipeMenuItemClickListener = mSwipeMenuItemClickListener;
+//        }
 
         private boolean isHeaderView(int position) {
             return position < getHeaderItemCount();

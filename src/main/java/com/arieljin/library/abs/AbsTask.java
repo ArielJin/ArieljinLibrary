@@ -132,7 +132,7 @@ public abstract class AbsTask<T extends Serializable> implements Runnable {
             } catch (Throwable throwable) {
                 throwable.printStackTrace();
                 if (isDebug)
-                    Log.e(getClass().getName(), "\n" + "response:" + (request != null ? request.getBody(weakReference.get()).toString() : "null") + "\n");
+                    Log.e(getClass().getName(), "\n" + "request:" + (request != null ? request.getBody(weakReference.get()).toString() : "null") + "\n");
                 if (needLast && needLastOnce) {
                     JSONObject lastJson = null;
                     try {
@@ -184,7 +184,7 @@ public abstract class AbsTask<T extends Serializable> implements Runnable {
         String s = EntityUtils.toString(response.getEntity(), "UTF-8").trim();
 
         if (isDebug)
-            Log.e(getClass().getName(), "   请求成功：" + "\n" + "url:" + url + "\n" + "response:" + request.getBody(weakReference.get()).toString() + "\n" + "header:" + (headers != null ? headers.toString() : "null") + "\n" + "result:" + s);
+            Log.e(getClass().getName(), "   请求成功：" + "\n" + "url:" + url + "\n" + "request:" + request.getBody(weakReference.get()).toString() + "\n" + "header:" + (headers != null ? headers.toString() : "null") + "\n" + "result:" + s);
 
         return new JSONObject(s);
     }
