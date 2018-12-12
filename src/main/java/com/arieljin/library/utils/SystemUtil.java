@@ -2,6 +2,7 @@ package com.arieljin.library.utils;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.Environment;
 import android.view.inputmethod.InputMethodManager;
 
 /**
@@ -15,6 +16,12 @@ public class SystemUtil {
 
         if (activity != null && !activity.isFinishing())
             ((InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+
+    }
+
+    public static boolean hasSdcard() {
+
+        return Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED);
 
     }
 

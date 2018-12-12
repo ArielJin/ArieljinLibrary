@@ -12,12 +12,12 @@ import android.util.SparseArray;
  * @time 2018/10/14.
  * @email ariel.jin@tom.com
  */
-public class PermissionManager {
+public abstract class PermissionManager {
 
 
     private static SparseArray<OnRequestPermissionsResultListener> onRequestPermissionsResultListenerSparseArray;
 
-    public void checkSelfPermission(@NonNull AppCompatActivity activity, @NonNull String permission, final @IntRange(from = 0) int checkRequestCode, @NonNull final OnPermissionCheckedCallback onPermissionCheckedCallback) throws IllegalAccessException {
+    public void checkSelfPermission(@NonNull AppCompatActivity activity, @NonNull final String permission, final @IntRange(from = 0) int checkRequestCode, @NonNull final OnPermissionCheckedCallback onPermissionCheckedCallback) throws IllegalAccessException {
 
         if (onRequestPermissionsResultListenerSparseArray == null)
             throw new IllegalAccessException("you must call onCreate() before this method");
@@ -32,6 +32,7 @@ public class PermissionManager {
 
                             if (onPermissionCheckedCallback != null)
                                 onPermissionCheckedCallback.callbackSucceed();
+                            callbackSucceed(permission);
 
                         } else {
                             if (onPermissionCheckedCallback != null)
@@ -51,6 +52,7 @@ public class PermissionManager {
         } else {
 
             onPermissionCheckedCallback.callbackSucceed();
+            callbackSucceed(permission);
 
         }
 
@@ -80,6 +82,7 @@ public class PermissionManager {
         onRequestPermissionsResultListenerSparseArray = new SparseArray<>();
     }
 
+    public abstract void callbackSucceed(@NonNull String permission);
 
     private interface OnRequestPermissionsResultListener {
 

@@ -76,20 +76,14 @@ public abstract class AbsTask<T extends Serializable> implements Runnable {
     }
 
     public AbsTask(Context context, AbsRequest request, OnTaskCompleteListener<T> completeListener) {
-        super();
-        this.weakReference = new WeakReference<>(context);
-        this.request = request;
-        this.headers = addHeaders();
-        addListener(completeListener);
-        init();
+        this(context, request, false, completeListener);
     }
 
     public AbsTask(Context context, AbsRequest request, boolean needToast, /*boolean needCircle, */OnTaskCompleteListener<T> completeListener) {
-        super();
         this.weakReference = new WeakReference<>(context);
 //        this.mObjectMapper = new ObjectMapper();
         this.request = request;
-        this.headers = addHeaders();
+//        this.headers = addHeaders();
         this.needToast = needToast;
 //        this.needCircle = needCircle;
         addListener(completeListener);
@@ -197,7 +191,7 @@ public abstract class AbsTask<T extends Serializable> implements Runnable {
         return this instanceof RefreshBaseTask;
     }
 
-    protected abstract HashMap<String, String> addHeaders();
+//    protected abstract HashMap<String, String> addHeaders();
 
     protected void initDialog() {
         if (dialog == null && weakReference.get() != null) {
@@ -339,29 +333,44 @@ public abstract class AbsTask<T extends Serializable> implements Runnable {
 
                         if (onTaskCompleteListeners != null) {
                             if (context instanceof Activity && isCanCallbackToUi()) {
-                                ((Activity) context).runOnUiThread(new Runnable() {
 
-                                    @Override
-                                    public void run() {
-                                        for (OnTaskCompleteListener<T> onTaskCompleteListener : onTaskCompleteListeners) {
-//                                            onTaskCompleteListener.onTaskFailed("网络异常");
-                                            if (!isLoadMore && needLastOnce) {
-                                                T result = loadLast();
-                                                if (result != null) {
-                                                    completed(result, isLoadMore, true);
-                                                    if (needOnlyLast) {
-                                                        isSending = true;
-                                                        return;
-                                                    }
-                                                } else {
-                                                    onTaskCompleteListener.onTaskFailed("网络异常");
-                                                }
-                                            } else {
-                                                onTaskCompleteListener.onTaskFailed("网络异常");
-                                            }
+                                if (!isLoadMore && needLastOnce) {
+                                    T result = loadLast();
+                                    if (result != null) {
+                                        completed(result, isLoadMore, true);
+                                        if (needOnlyLast) {
+                                            isSending = true;
+                                            return;
                                         }
+                                    } else {
+                                        failed("网络异常");
                                     }
-                                });
+                                } else {
+                                    failed("网络异常");
+                                }
+//                                ((Activity) context).runOnUiThread(new Runnable() {
+//
+//                                    @Override
+//                                    public void run() {
+//                                        for (OnTaskCompleteListener<T> onTaskCompleteListener : onTaskCompleteListeners) {
+////                                            onTaskCompleteListener.onTaskFailed("网络异常");
+//                                            if (!isLoadMore && needLastOnce) {
+//                                                T result = loadLast();
+//                                                if (result != null) {
+//                                                    completed(result, isLoadMore, true);
+//                                                    if (needOnlyLast) {
+//                                                        isSending = true;
+//                                                        return;
+//                                                    }
+//                                                } else {
+//                                                    onTaskCompleteListener.onTaskFailed("网络异常");
+//                                                }
+//                                            } else {
+//                                                onTaskCompleteListener.onTaskFailed("网络异常");
+//                                            }
+//                                        }
+//                                    }
+//                                });
                             }
                         }
                         return;
@@ -500,21 +509,23 @@ public abstract class AbsTask<T extends Serializable> implements Runnable {
         progressBar.setProgress(progress);
     }
 
-    protected T loadLast() {
+    private T loadLast() {
         if (weakReference.get() != null) {
-            String s = loadLastString();
-            if (!TextUtils.isEmpty(s)) {
-                try {
-                    return parseJson(new JSONObject(s));
-                } catch (Throwable throwable) {
-                    throwable.printStackTrace();
-                }
+            JSONObject lastJSONObject;
+            try {
+                lastJSONObject = loadLastJson();
+                if (lastJSONObject != null)
+                    return parseCompleteJson(lastJSONObject);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            } catch (Throwable throwable) {
+                throwable.printStackTrace();
             }
         }
         return null;
     }
 
-    private JSONObject loadLastJson() throws JSONException {
+    protected JSONObject loadLastJson() throws JSONException {
         if (weakReference.get() != null) {
             String s = loadLastString();
             if (!TextUtils.isEmpty(s)) {
@@ -572,6 +583,13 @@ public abstract class AbsTask<T extends Serializable> implements Runnable {
                 }
             }
         }
+    }
+
+    protected boolean deleteLast() {
+        if (weakReference.get() != null) {
+            return weakReference.get().deleteFile(getClass().getSimpleName() + getLastTag());
+        }
+        return false;
     }
 
     protected String getLastTag() {

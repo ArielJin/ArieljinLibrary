@@ -14,6 +14,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.arieljin.library.manager.PermissionManager;
+import com.arieljin.library.utils.SystemUtil;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -112,7 +113,7 @@ public class UpdateManager {
 
                 if (onAppCheckUploadListener != null) {
 
-                    if (!hasSdcard()) {
+                    if (!SystemUtil.hasSdcard()) {
                         onAppCheckUploadListener.updateErroe(false, "没有外部存储，请到应用市场或者官网自行更新！");
                         return;
                     }
@@ -306,12 +307,6 @@ public class UpdateManager {
             }
 
         }
-    }
-
-    private boolean hasSdcard() {
-
-        return Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED);
-
     }
 
 
