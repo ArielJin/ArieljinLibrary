@@ -33,6 +33,7 @@ public abstract class RefreshBaseFragment extends AbsFragment implements Refresh
         View contentView = onCreateContentView(inflater, container, savedInstanceState);
         swipeRefreshLayout.addView(contentView);
         refreshBaseInterface = new RefreshBaseImpl(swipeRefreshLayout);
+//        refreshBaseInterface.setContentView(contentView);
         registerRefreshListener();
         init();
         initContentView(contentView);

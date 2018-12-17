@@ -19,6 +19,8 @@ public class RefreshBaseImpl implements RefreshBaseInterface {
     private SwipeRefreshLayout swipeRefreshLayout;
     private Set<RefreshBaseTask> taskSet;
     private Iterator<RefreshBaseTask> iterator = null;
+//    private View contentView, errorView;
+//    private boolean hasComplete = false, hasErrorPage = false;
 
     private RefreshBaseImpl() {
     }
@@ -46,6 +48,13 @@ public class RefreshBaseImpl implements RefreshBaseInterface {
 
     @Override
     public void onTaskComplete() {
+//        hasComplete = true;
+//        if (hasErrorPage) {
+//            // TODO: 2018/12/12 刷新成功  加载正常界面
+//            hasErrorPage = false;
+//            swipeRefreshLayout.removeView(errorView);
+//            swipeRefreshLayout.addView(contentView);
+//        }
         if (iterator != null && iterator.hasNext())
             iterator.next().start();
         else
@@ -62,9 +71,31 @@ public class RefreshBaseImpl implements RefreshBaseInterface {
     public void onTaskFailed() {
         if (iterator != null && iterator.hasNext())
             iterator.next().start();
-        else
+        else {
+//            if (!hasComplete && !hasErrorPage) {
+//                // TODO: 2018/12/12 加载错误的界面
+//                hasErrorPage = true;
+//
+//                swipeRefreshLayout.removeView(contentView);
+//                if (errorView == null) {
+//                    errorView = LayoutInflater.from(swipeRefreshLayout.getContext()).inflate(R.layout.activity_refresh_error, null);
+//                    errorView.findViewById(R.id.tv_ariel_refresh).setOnClickListener(new View.OnClickListener() {
+//                        @Override
+//                        public void onClick(View v) {
+//                            startTasks();
+//                        }
+//                    });
+//                }
+//
+//
+//                swipeRefreshLayout.addView(errorView);
+//
+//
+//            }
+
             swipeRefreshLayout.setRefreshing(false);
 
+        }
 
     }
 
@@ -89,6 +120,12 @@ public class RefreshBaseImpl implements RefreshBaseInterface {
             unRegisterRefreshListener();
         swipeRefreshLayout.setEnabled(enabled);
     }
+
+//    @Override
+//    public void setContentView(View view) {
+//        this.contentView = view;
+//
+//    }
 
     @Override
     public <T extends Serializable> void addTask(RefreshBaseTask<T> task) {

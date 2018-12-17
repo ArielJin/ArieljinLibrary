@@ -6,56 +6,60 @@ import android.util.Log;
 import com.arieljin.library.utils.MyWeakHashMap;
 
 public class AbsActivityManager {
-	protected final static MyWeakHashMap<String, AbsActivity> mActivities = new MyWeakHashMap<>();
-	protected static AbsActivity mCurrentActivity;
+    protected final static MyWeakHashMap<String, AbsActivity> mActivities = new MyWeakHashMap<>();
+    protected static AbsActivity mCurrentActivity;
 
 
-	public static void onCreate(AbsActivity activity) {
-		mActivities.put(activity.getClass().getName(), activity);
-	}
+    public static void onCreate(AbsActivity activity) {
+        mActivities.put(activity.getClass().getName(), activity);
+    }
 
-	public static void finishActivities() {
-		for (AbsActivity activity : mActivities.values()) {
-			activity.setHasFinishAnimation(true);
+    public static void finishActivities() {
+        for (AbsActivity activity : mActivities.values()) {
+            activity.setHasFinishAnimation(true);
 
-			Log.i("arieljin", "finish:" + activity.getClass().getSimpleName());
+            Log.i("arieljin", "finish:" + activity.getClass().getSimpleName());
 
-			activity.finish();
-		}
-		mActivities.clear();
-	}
+            activity.finish();
+        }
+        mActivities.clear();
+    }
 
-	public static void onDestroy(AbsActivity activity) {
-		mActivities.remove(activity.getClass().getName());
-	}
+    public static void onDestroy(AbsActivity activity) {
+        mActivities.remove(activity.getClass().getName());
+    }
 
-	public static boolean onResume(AbsActivity activity) {
-		if (mCurrentActivity == null && activity != null) {
-			Context context = AbsApplication.getInstance();
-			synchronized (context) {
-				context.notifyAll();
-			}
-		}
-		mCurrentActivity = activity;
-		return true;
-	}
+    public static boolean onResume(AbsActivity activity) {
+        if (mCurrentActivity == null && activity != null) {
+            Context context = AbsApplication.getInstance();
+            synchronized (context) {
+                context.notifyAll();
+            }
+        }
+        mCurrentActivity = activity;
+        return true;
+    }
 
-	public static boolean onPause(AbsActivity activity) {
-		if (activity == mCurrentActivity) {
-			mCurrentActivity = null;
-		}
-		return true;
-	}
+    public static boolean onPause(AbsActivity activity) {
+        if (activity == mCurrentActivity) {
+            mCurrentActivity = null;
+        }
+        return true;
+    }
 
-	public static AbsActivity getCurrentActivity() {
-		return mCurrentActivity;
-	}
+    public static AbsActivity getCurrentActivity() {
+        return mCurrentActivity;
+    }
 
-	public static int getActivityCount() {
-		return mActivities == null ? 0 : mActivities.size();
-	}
+    public static int getActivityCount() {
+        return mActivities == null ? 0 : mActivities.size();
+    }
 
-	public static AbsActivity getAcitivity(String className) {
-		return mActivities == null ? null : mActivities.get(className);
-	}
+    private static AbsActivity getAcitivity(String className) {
+        return mActivities == null ? null : mActivities.get(className);
+    }
+
+    public static AbsActivity getAcitivity(Class<? extends AbsActivity> absActivityCls) {
+        return getAcitivity(absActivityCls.getName());
+    }
 }

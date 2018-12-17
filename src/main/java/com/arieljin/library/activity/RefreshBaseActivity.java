@@ -29,6 +29,7 @@ public class RefreshBaseActivity extends AbsActivity implements RefreshBaseTaskI
         SwipeRefreshLayout swipeRefreshLayout = this.findViewById(R.id.ariel_base_srl);
         swipeRefreshLayout.addView(view);
         refreshBaseInterface = new RefreshBaseImpl(swipeRefreshLayout);
+//        refreshBaseInterface.setContentView(view);
         registerRefreshListener();
 
     }
@@ -37,8 +38,10 @@ public class RefreshBaseActivity extends AbsActivity implements RefreshBaseTaskI
     public void setContentView(int layoutResID) {
         super.setContentView(R.layout.activity_refresh_base);
         SwipeRefreshLayout swipeRefreshLayout = this.findViewById(R.id.ariel_base_srl);
-        swipeRefreshLayout.addView(LayoutInflater.from(this).inflate(layoutResID, null));
+        View contentView = LayoutInflater.from(this).inflate(layoutResID, null);
+        swipeRefreshLayout.addView(contentView);
         refreshBaseInterface = new RefreshBaseImpl(swipeRefreshLayout);
+//        refreshBaseInterface.setContentView(contentView);
         registerRefreshListener();
     }
 

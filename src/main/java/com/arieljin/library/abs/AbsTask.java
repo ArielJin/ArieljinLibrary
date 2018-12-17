@@ -325,29 +325,31 @@ public abstract class AbsTask<T extends Serializable> implements Runnable {
 
                     thread.isLoadMore = isLoadMore;
 
+                    showDialog();
+
                     if (!HttpManger.isNetworkAvailable() && (!needLast || needLastOnce)) {
 
 //                        if(needToast || needCircle) {
 //                            ToastUtil.showErrorToast("网络异常");
 //                        }
 
-                        if (onTaskCompleteListeners != null) {
-                            if (context instanceof Activity && isCanCallbackToUi()) {
+//                        if (onTaskCompleteListeners != null) {
+                        if (context instanceof Activity && isCanCallbackToUi()) {
 
-                                if (!isLoadMore && needLastOnce) {
-                                    T result = loadLast();
-                                    if (result != null) {
-                                        completed(result, isLoadMore, true);
-                                        if (needOnlyLast) {
-                                            isSending = true;
-                                            return;
-                                        }
-                                    } else {
-                                        failed("网络异常");
+                            if (!isLoadMore && needLastOnce) {
+                                T result = loadLast();
+                                if (result != null) {
+                                    completed(result, isLoadMore, true);
+                                    if (needOnlyLast) {
+                                        isSending = true;
+                                        return;
                                     }
                                 } else {
                                     failed("网络异常");
                                 }
+                            } else {
+                                failed("网络异常");
+                            }
 //                                ((Activity) context).runOnUiThread(new Runnable() {
 //
 //                                    @Override
@@ -371,12 +373,11 @@ public abstract class AbsTask<T extends Serializable> implements Runnable {
 //                                        }
 //                                    }
 //                                });
-                            }
                         }
+//                        }
                         return;
                     }
 
-                    showDialog();
 
 //                    if ((needToast ||/*needCircle*/ isRefreshBaseTask()) && !thread.isRestart && !isLoadMore) {
 //                        if (context instanceof Activity && !((Activity) context).isFinishing()) {

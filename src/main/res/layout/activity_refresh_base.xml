@@ -1,13 +1,10 @@
-<?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?><!--<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"--><!--android:layout_width="match_parent"--><!--android:layout_height="match_parent">-->
+
+<com.arieljin.library.widget.FixVpSwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/ariel_base_srl"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.arieljin.library.widget.FixVpSwipeRefreshLayout
-        android:id="@+id/ariel_base_srl"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+</com.arieljin.library.widget.FixVpSwipeRefreshLayout>
 
-    </com.arieljin.library.widget.FixVpSwipeRefreshLayout>
-
-</android.support.constraint.ConstraintLayout>
+    <!--</android.support.constraint.ConstraintLayout>-->
