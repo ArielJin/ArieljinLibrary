@@ -7,7 +7,7 @@ import android.view.View;
  * @time 2018/9/7.
  * @email ariel.jin@tom.com
  */
-public class AbsRecyclerAdapterVH extends RecyclerView.ViewHolder implements AdapterVHI{
+public class AbsRecyclerAdapterVH extends RecyclerView.ViewHolder implements AdapterVHI {
 
     private AdapterVHI adapterVHI;
 //    private AdapterRecyclerRender render;
@@ -31,6 +31,11 @@ public class AbsRecyclerAdapterVH extends RecyclerView.ViewHolder implements Ada
     @Override
     public View getItemView() {
         return adapterVHI.getItemView();
+    }
+
+    public void clear() {
+
+        ((AdapterVHIImpl) adapterVHI).clear();
     }
 
 //    public void setRender(AdapterRecyclerRender render) {

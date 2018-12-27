@@ -26,4 +26,6 @@ public interface RefreshBaseTaskInterface {
 
     void unRegisterRefreshListener();
 
+    void setRefreshing(boolean refreshing);
+
 }

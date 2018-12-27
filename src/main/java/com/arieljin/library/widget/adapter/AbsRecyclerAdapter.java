@@ -1,5 +1,6 @@
 package com.arieljin.library.widget.adapter;
 
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
 
@@ -13,6 +14,7 @@ public class AbsRecyclerAdapter<T extends Serializable> extends RecyclerView.Ada
 
     private List<T> list;
     private AdapterRecyclerRender render;
+    private AbsRecyclerAdapterVH vh;
 
     public AbsRecyclerAdapter(List<T> list, AdapterRecyclerRender<T> render) {
         this.list = list;
@@ -40,7 +42,7 @@ public class AbsRecyclerAdapter<T extends Serializable> extends RecyclerView.Ada
         return list;
     }
 
-    public void clean(){
+    public void clean() {
         if (list != null && !list.isEmpty())
             list.clear();
         notifyDataSetChanged();
@@ -48,7 +50,9 @@ public class AbsRecyclerAdapter<T extends Serializable> extends RecyclerView.Ada
 
     @Override
     public AbsRecyclerAdapterVH onCreateViewHolder(ViewGroup parent, int viewType) {
-        AbsRecyclerAdapterVH vh = render.getReusableComponent(parent);
+
+        vh = render.getReusableComponent(parent);
+//        AbsRecyclerAdapterVH vh = render.getReusableComponent(parent);
 //        vh.itemView.setTag(R.id.ariel_recycler_render_item, render);
 //        vh.setRender(this.render);
         return vh;
@@ -57,15 +61,25 @@ public class AbsRecyclerAdapter<T extends Serializable> extends RecyclerView.Ada
     @Override
     public void onBindViewHolder(AbsRecyclerAdapterVH holder, int position) {
 //        AdapterRecyclerRender<T> render = holder.getRender();
-        AdapterRecyclerRender<T>  vhRender= render.getVhTag(holder);
+        AdapterRecyclerRender<T> vhRender = render.getVhTag(holder);
         T t = list.get(position);
         if (vhRender != null) {
-            vhRender.fitDatas(holder,t, position);
-            vhRender.fitEvents(holder,t, position);
+            vhRender.fitDatas(holder, t, position);
+            vhRender.fitEvents(holder, t, position);
         }
 
     }
 
+    @Override
+    public void onViewRecycled(@NonNull AbsRecyclerAdapterVH holder) {
+        super.onViewRecycled(holder);
+        AdapterRecyclerRender<T> vhRender = render.getVhTag(holder);
+        if (vhRender != null) {
+            vhRender.onViewRecycled(holder);
+            holder.clear();
+        }
+
+    }
 
     @Override
     public int getItemViewType(int position) {

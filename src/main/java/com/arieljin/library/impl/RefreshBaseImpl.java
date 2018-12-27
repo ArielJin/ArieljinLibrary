@@ -37,7 +37,7 @@ public class RefreshBaseImpl implements RefreshBaseInterface {
     @Override
     public void onTaskStart() {
 
-        swipeRefreshLayout.setRefreshing(true);
+        setRefreshing(true);
 
     }
 
@@ -58,12 +58,12 @@ public class RefreshBaseImpl implements RefreshBaseInterface {
         if (iterator != null && iterator.hasNext())
             iterator.next().start();
         else
-            swipeRefreshLayout.setRefreshing(false);
+            setRefreshing(false);
     }
 
     @Override
     public void onTaskLoadMoreComplete() {
-        swipeRefreshLayout.setRefreshing(false);
+        setRefreshing(false);
 
     }
 
@@ -93,7 +93,7 @@ public class RefreshBaseImpl implements RefreshBaseInterface {
 //
 //            }
 
-            swipeRefreshLayout.setRefreshing(false);
+            setRefreshing(false);
 
         }
 
@@ -104,7 +104,7 @@ public class RefreshBaseImpl implements RefreshBaseInterface {
         if (iterator != null && iterator.hasNext())
             iterator.next().start();
         else
-            swipeRefreshLayout.setRefreshing(false);
+            setRefreshing(false);
     }
 
     @Override
@@ -147,7 +147,7 @@ public class RefreshBaseImpl implements RefreshBaseInterface {
             if (iterator != null)
                 iterator = null;
             if (swipeRefreshLayout.isRefreshing())
-                swipeRefreshLayout.setRefreshing(false);
+                setRefreshing(false);
         }
 
     }
@@ -173,6 +173,11 @@ public class RefreshBaseImpl implements RefreshBaseInterface {
     @Override
     public void unRegisterRefreshListener() {
         swipeRefreshLayout.setOnRefreshListener(null);
+    }
+
+    @Override
+    public void setRefreshing(boolean refreshing) {
+        swipeRefreshLayout.setRefreshing(refreshing);
     }
 
 

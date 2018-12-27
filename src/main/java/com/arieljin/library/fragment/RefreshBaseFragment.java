@@ -89,6 +89,10 @@ public abstract class RefreshBaseFragment extends AbsFragment implements Refresh
         refreshBaseInterface.unRegisterRefreshListener();
     }
 
+    @Override
+    public void setRefreshing(boolean refreshing) {
+        refreshBaseInterface.setRefreshing(refreshing);
+    }
 
     public abstract View onCreateContentView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState);
 

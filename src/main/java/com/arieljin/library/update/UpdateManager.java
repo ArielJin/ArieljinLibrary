@@ -12,6 +12,8 @@ import android.os.Message;
 import android.os.Process;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.KeyEvent;
+import android.widget.Toast;
 
 import com.arieljin.library.manager.PermissionManager;
 import com.arieljin.library.utils.SystemUtil;
@@ -62,7 +64,7 @@ public class UpdateManager {
 
         if (onAppCheckUploadListener != null && onAppCheckUploadListener.needUpdate(updateInfo.getAppVersion(), versionCode)) {
 
-            upload(updateInfo.getAppName(), updateInfo.getAppVersion(), updateInfo.getDescription(), updateInfo.getDownloadUrl());
+            upload(updateInfo.getAppName(), updateInfo.getAppVersion(), updateInfo.getDescription(), updateInfo.getDownloadUrl(), updateInfo.isForceUpdate());
 
 
         }
@@ -93,21 +95,34 @@ public class UpdateManager {
         };
     }
 
-    private void upload(String appName, float appVersion, String description, final String downloadUrl) {
+    private void upload(String appName, float appVersion, String description, final String downloadUrl, boolean isForceUpdate) {
 //        initLocalCachePath(appName, appVersion);
 //        appName + "_" + String.valueOf(appVersion)
-        showUploadDialog(description, downloadUrl, appName, appVersion);
+        showUploadDialog(description, downloadUrl, appName, appVersion, isForceUpdate);
     }
 
-    private void showUploadDialog(String description, final String downloadUrl, final String appName, final float appVersion) {
+    private void showUploadDialog(String description, final String downloadUrl, final String appName, final float appVersion, final boolean isForceUpdate) {
 
-        new AlertDialog.Builder(context).setTitle("检测到新版本！").setMessage(!TextUtils.isEmpty(description) ? description : "暂未获取到更新内容！").setNegativeButton("下次再说", new DialogInterface.OnClickListener() {
+        new AlertDialog.Builder(context).setCancelable(false).setOnKeyListener(new DialogInterface.OnKeyListener() {
+            @Override
+            public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+                if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0)
+                    return true;
+                else
+                    return false;
+            }
+        }).setTitle("检测到新版本！").setMessage(!TextUtils.isEmpty(description) ? description : "暂未获取到更新内容！").setNegativeButton(isForceUpdate ? "关闭应用" : "下次再说", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
+                if (isForceUpdate) {
+                    android.os.Process.killProcess(Process.myPid());
+                    System.exit(0);
+                }
+
 
             }
-        }).setPositiveButton("下载", new DialogInterface.OnClickListener() {
+        }).setPositiveButton("下载更新", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
@@ -133,6 +148,10 @@ public class UpdateManager {
                             public void callbackFailed() {
                                 onAppCheckUploadListener.updateErroe(false, "请开启存储权限！");
                                 PermissionManager.onDestory();
+                                if (isForceUpdate) {
+                                    android.os.Process.killProcess(Process.myPid());
+                                    System.exit(0);
+                                }
 
                             }
                         });
@@ -164,6 +183,15 @@ public class UpdateManager {
         }
         if (progressDialog == null) {
             progressDialog = new ProgressDialog(context);
+            progressDialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
+                @Override
+                public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+                    if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0)
+                        return true;
+                    else
+                        return false;
+                }
+            });
             progressDialog.setTitle("正在下载...");
             progressDialog.setCanceledOnTouchOutside(false);
             progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);

@@ -87,4 +87,9 @@ public class RefreshBaseActivity extends AbsActivity implements RefreshBaseTaskI
 
     }
 
+    @Override
+    public void setRefreshing(boolean refreshing) {
+        refreshBaseInterface.setRefreshing(refreshing);
+    }
+
 }
