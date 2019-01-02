@@ -10,7 +10,7 @@ public class UpdateInfo extends AbsModel {
 
     private String appName;
 
-    private float appVersion;
+    private String appVersion;
 
     private String description;
 
@@ -18,7 +18,7 @@ public class UpdateInfo extends AbsModel {
 
     private boolean isForceUpdate;
 
-    public UpdateInfo(String appName, float appVersion, String description, String downloadUrl, boolean isForceUpdate) {
+    public UpdateInfo(String appName, String appVersion, String description, String downloadUrl, boolean isForceUpdate) {
         this.appName = appName;
         this.appVersion = appVersion;
         this.description = description;
@@ -38,7 +38,7 @@ public class UpdateInfo extends AbsModel {
         return appName;
     }
 
-    public float getAppVersion() {
+    public String getAppVersion() {
         return appVersion;
     }
 
@@ -51,7 +51,7 @@ public class UpdateInfo extends AbsModel {
     }
 
     public boolean canCheckUp() {
-        return appVersion > 0 && !TextUtils.isEmpty(downloadUrl);
+        return !TextUtils.isEmpty(appVersion) && !TextUtils.isEmpty(downloadUrl);
     }
 
     public boolean isForceUpdate() {

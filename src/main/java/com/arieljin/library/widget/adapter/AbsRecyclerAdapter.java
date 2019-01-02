@@ -64,8 +64,15 @@ public class AbsRecyclerAdapter<T extends Serializable> extends RecyclerView.Ada
         AdapterRecyclerRender<T> vhRender = render.getVhTag(holder);
         T t = list.get(position);
         if (vhRender != null) {
-            vhRender.fitDatas(holder, t, position);
-            vhRender.fitEvents(holder, t, position);
+            try {
+
+                vhRender.fitDatas(holder, t, position);
+                vhRender.fitEvents(holder, t, position);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
         }
 
     }

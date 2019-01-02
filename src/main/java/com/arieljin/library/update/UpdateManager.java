@@ -13,7 +13,6 @@ import android.os.Process;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.widget.Toast;
 
 import com.arieljin.library.manager.PermissionManager;
 import com.arieljin.library.utils.SystemUtil;
@@ -51,10 +50,45 @@ public class UpdateManager {
         }
 //        String serResponse = "";
 
-        float versionCode = 0;
+        boolean needUpdate = false;
 
         try {
-            versionCode = Float.valueOf(context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionName);
+
+            String currentVersionNameStr = context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionName.trim();
+            String serviceVersionNameStr = updateInfo.getAppVersion().trim();
+
+            if (currentVersionNameStr.contains(".") && serviceVersionNameStr.contains(".")) {
+                String[] currentVersionNameStrs = currentVersionNameStr.split("\\.");
+                String[] serviceVersionNameStrs = serviceVersionNameStr.split("\\.");
+
+                boolean noResult = true;
+                for (int i = 0; i < Math.min(currentVersionNameStrs.length, serviceVersionNameStrs.length); i++) {
+
+                    int serviceVersion = Integer.valueOf(serviceVersionNameStrs[i]);
+                    int currentVersion = Integer.valueOf(currentVersionNameStrs[i]);
+                    if (serviceVersion > currentVersion) {
+                        needUpdate = true;
+                        noResult = false;
+                        break;
+                    } else if (serviceVersion < currentVersion) {
+                        noResult = false;
+                        break;
+                    }
+
+
+                }
+
+                if (noResult) {
+                    needUpdate = serviceVersionNameStrs.length > currentVersionNameStrs.length;
+                }
+
+
+            } else {
+
+                needUpdate = Float.valueOf(serviceVersionNameStr) > Float.valueOf(currentVersionNameStr);
+
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
             if (onAppCheckUploadListener != null)
@@ -62,7 +96,7 @@ public class UpdateManager {
             return;
         }
 
-        if (onAppCheckUploadListener != null && onAppCheckUploadListener.needUpdate(updateInfo.getAppVersion(), versionCode)) {
+        if (onAppCheckUploadListener != null && onAppCheckUploadListener.needUpdate(needUpdate)) {
 
             upload(updateInfo.getAppName(), updateInfo.getAppVersion(), updateInfo.getDescription(), updateInfo.getDownloadUrl(), updateInfo.isForceUpdate());
 
@@ -95,13 +129,13 @@ public class UpdateManager {
         };
     }
 
-    private void upload(String appName, float appVersion, String description, final String downloadUrl, boolean isForceUpdate) {
+    private void upload(String appName, String appVersion, String description, final String downloadUrl, boolean isForceUpdate) {
 //        initLocalCachePath(appName, appVersion);
 //        appName + "_" + String.valueOf(appVersion)
         showUploadDialog(description, downloadUrl, appName, appVersion, isForceUpdate);
     }
 
-    private void showUploadDialog(String description, final String downloadUrl, final String appName, final float appVersion, final boolean isForceUpdate) {
+    private void showUploadDialog(String description, final String downloadUrl, final String appName, final String appVersion, final boolean isForceUpdate) {
 
         new AlertDialog.Builder(context).setCancelable(false).setOnKeyListener(new DialogInterface.OnKeyListener() {
             @Override
@@ -139,7 +173,7 @@ public class UpdateManager {
                             @Override
                             public void callbackSucceed() {
 
-                                downloadPath = Environment.getExternalStorageDirectory() + File.separator + appName + File.separator + appName + "_" + String.valueOf(appVersion) + ".apk";
+                                downloadPath = Environment.getExternalStorageDirectory() + File.separator + appName + File.separator + appName + "_" + appVersion + ".apk";
                                 new WeakReference<>(new DownloadThread(handler, downloadUrl, appName, downloadPath)).get().start();
                                 PermissionManager.onDestory();
                             }
